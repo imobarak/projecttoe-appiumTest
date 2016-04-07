@@ -1,18 +1,23 @@
+//tests done are marked in *
 main page:
+==========
 scroll steps
-*sign In
+* sign In
 join now
 
 Login:
-*valid login
-*invalid login
+======
+* valid login
+* invalid login
 join now
 forgot password
 back
 
 Signup:
+=======
 
 NewsFeed tab:
+==============
 * loading public newsfeed
 loading group newsfeed
 * make a public post
@@ -27,11 +32,16 @@ click more to share
 click on post to view profile
 
 Groups tab:
+===========
 
 Friend requests tab:
+====================
 
 Chat tab:
+==========
 
 Notification tab:
+=================
 
 Profile section:
+=================
