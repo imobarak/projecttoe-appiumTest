@@ -1,18 +1,3 @@
-/*import io.appium.java_client.MobileElement;
-import org.junit.After;
-import org.junit.Before;
-import io.appium.java_client.ios.IOSDriver;
-import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.testng.Assert;
-
-import java.net.MalformedURLException;
-import java.net.URL;
-import org.openqa.selenium.WebElement;*/
 import java.net.MalformedURLException;
 
 import org.openqa.selenium.Alert;
@@ -45,30 +30,36 @@ public class PTTest {
     IOSDriver driver;
     DesiredCapabilities capabilities;
     WebElement nav_bar;
+    WebElement tab_bar;
     //should have @Before @After if tests are independent and i'd want
     // to execute certain actions before/after every test
     //but in our case they depend on login to continue
-    @BeforeGroups("allTests")
+   // @BeforeGroups("allTests")
+    @BeforeTest(groups = "main")
     public void setup() throws MalformedURLException {
         capabilities = new DesiredCapabilities();
         capabilities.setCapability("deviceName","myphone");
         capabilities.setCapability("autoAcceptAlerts", true);
          driver = new IOSDriver(new URL("http://127.0.0.1:4723/wd/hub"),capabilities);
         System.out.println("setup done");
-
     }
 
-    @AfterTest(groups = "allTests", alwaysRun = true )
+    //@AfterTest(groups = "allTests", alwaysRun = true )
+    @AfterTest(groups = "main", alwaysRun = true )
     public void teardown(){
         driver.quit();
         System.out.println("clean up done");
-
     }
 
-    @Test(priority=1, groups = "allTests")
+    @Test(groups = "main", priority = 1)
+    public  void signIn() throws Exception {
+        WebElement element = driver.findElement(By.name("Sign In"));
+        Assert.assertNotNull(element);
+        element.click();
+    }
+
+    @Test(groups = "main", priority=2)
     public void loginWithInvalidCredentials() throws MalformedURLException {
-        driver.findElement(By.name("Sign In")).click();
-        capabilities.setCapability("autoAcceptAlerts", false);
         driver.findElement(By.xpath("//UIATableCell[1]/UIATextField")).sendKeys("invalidUsername");
         driver.findElement(By.xpath("//UIATableCell[2]/UIASecureTextField")).sendKeys("password");
         driver.findElement(By.name("SUBMIT")).click();
@@ -82,7 +73,7 @@ public class PTTest {
         System.out.println("invalidLogin done");
     }
 
-    @Test(priority=2, groups = "allTests")
+    @Test(groups = "main", priority=3)
     public void loginWithValidCredentials() throws MalformedURLException {
         driver.findElement(By.xpath("//UIATableCell[1]/UIATextField")).clear();
         driver.findElement(By.xpath("//UIATableCell[2]/UIASecureTextField")).clear();
@@ -91,56 +82,24 @@ public class PTTest {
         driver.findElement(By.name("SUBMIT")).click();
         MobileElement successView = (MobileElement)new WebDriverWait(driver,15).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//UIANavigationBar/UIAStaticText")));
         System.out.println("validlogin done");
+        tab_bar = driver.findElementByClassName("UIATabBar");
 
-       /* try{
-            isNewsFeedTab();
-            System.out.println("go to newsfeed success");
-            try {
-                loadNewsfeed();
-                System.out.println("load newsfeed success");
-            } catch (Exception e) {
-                System.out.println("loadNewsFeed failed");
-            }
-            try {
-                //makePost();
-                //new WebDriverWait(driver,15).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//UIATableView")));
-                //checkPostSuccessful();
-                //System.out.println("post success");
-                //try {
-                //    hugPost();
-               //     System.out.println("hug post success");
-              //  } catch (Exception e) {
-              //      System.out.println("hug post failed");
-             //   }
-                try {
-
-                    commentPost();
-                    System.out.println("comment post success");
-                } catch (Exception e) {
-                    System.out.println("comment post failed");
-                }
-            } catch (Exception e) {
-                System.out.println("post failed");
-            }
-        }catch  (Exception e){
-            System.out.println("go to newsfeed failed");
-        }
-*/
     }
 
-    @Test( groups = "allTests", dependsOnMethods = {"loginWithValidCredentials"}, priority = 3)
-    public void isNewsFeedTab() throws Exception {
-        nav_bar = null;
+    @Test(groups = "newsfeed", dependsOnMethods = {"loginWithValidCredentials"}, priority = 10)
+    public void goToNewsFeedTab() throws Exception {
         //there is nav bar inside the app
         driver.getPageSource();
         nav_bar = driver.findElementByClassName("UIANavigationBar");
-        Assert.assertNotNull(nav_bar);
-        Assert.assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(),"Newsfeed");
-        System.out.println("isNewsfeed done");
+        tab_bar = driver.findElementByClassName("UIATabBar");
+        tab_bar.findElement(By.name("Newsfeed")).click();
+        Assert.assertTrue(tab_bar.findElement(By.name("Newsfeed")).isSelected());
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        Assert.assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(), "Newsfeed");
 
     }
 
-    @Test(groups = "allTests", dependsOnMethods = {"isNewsFeedTab"}, priority = 4)
+    @Test(groups = "newsfeed", dependsOnMethods = {"goToNewsFeedTab"}, priority = 11)
     public void loadNewsfeed() throws Exception {
         //first view in UICatalog is a table
         IOSElement table = (IOSElement)driver.findElementByClassName("UIATableView");
@@ -154,7 +113,7 @@ public class PTTest {
 
     }
 
-    @Test( groups = "allTests", dependsOnMethods = {"isNewsFeedTab"}, priority=5)
+    @Test(groups = "newsfeed", dependsOnMethods = {"goToNewsFeedTab"}, priority=12)
     public void makePost() throws Exception {
         nav_bar.findElement(By.name("Post")).click();
         driver.findElementByClassName("UIATextView").sendKeys("Testing using Appium");
@@ -179,7 +138,7 @@ public class PTTest {
 
     }
 
-    @Test( groups = "allTests", dependsOnMethods = {"isNewsFeedTab"}, priority = 7)
+    @Test(groups = "newsfeed", dependsOnMethods = {"goToNewsFeedTab"}, priority = 13)
     public void hugPost() throws Exception {
         //first view in UICatalog is a table
         IOSElement table = (IOSElement)driver.findElementByClassName("UIATableView");
@@ -196,7 +155,7 @@ public class PTTest {
 
     }
 
-    @Test( groups = "allTests", dependsOnMethods = {"isNewsFeedTab"}, priority = 8)
+    @Test(groups = "newsfeed", dependsOnMethods = {"goToNewsFeedTab"}, priority = 14)
     public void commentPost() throws Exception {
         IOSElement table = (IOSElement)driver.findElementByClassName("UIATableView");
         List<MobileElement> rows = table.findElementsByClassName("UIATableCell");
@@ -213,5 +172,67 @@ public class PTTest {
         rows = table.findElementsByClassName("UIATableCell");
         Assert.assertEquals(numOfCellsBefore + 1, rows.size());
         System.out.println("comment post");
+    }
+
+    @Test(groups = "groupsTab", priority = 20)
+    public void goToGroupsTab() throws Exception {
+
+        tab_bar.findElement(By.name("Groups")).click();
+        Assert.assertTrue(tab_bar.findElement(By.name("Groups")).isSelected());
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        Assert.assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(), "Support Groups");
+    }
+
+    @Test(groups = "groupsTab",  priority = 21)
+    public void loadGroups() throws Exception {
+        List<MobileElement> tableGroups = driver.findElements(By.xpath("//UIATableView/UIATableGroup"));
+        //assert that there are 3 sections
+        Assert.assertEquals(tableGroups.size(), 3);
+
+        //assert that this section exists
+        WebElement supportGroups = driver.findElementByName("YOUR SUPPORT GROUPS");
+        Assert.assertNotNull(supportGroups);
+
+        //assert that there are groups under this section - not empty
+        List<MobileElement> cells = driver.findElements(By.xpath("//UIATableCell[preceding-sibling::UIATableGroup[1]/@name = 'YOUR SUPPORT GROUPS']"));
+       Assert.assertNotEquals(cells.size(), 0);
+
+        //assert that this section exists
+        supportGroups = driver.findElementByName("RECOMMENDED SUPPORT GROUPS");
+        Assert.assertNotNull(supportGroups);
+
+        //assert that there are groups under this section - not empty
+        cells = driver.findElements(By.xpath("//UIATableCell[preceding-sibling::UIATableGroup[1]/@name = 'RECOMMENDED SUPPORT GROUPS']"));
+        Assert.assertNotEquals(cells.size(), 0);
+
+    }
+
+    @Test(groups = "requests", priority = 30)
+    public void goToRequestsTab() throws Exception {
+
+        tab_bar.findElement(By.name("Request")).click();
+        Assert.assertTrue(tab_bar.findElement(By.name("Request")).isSelected());
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        Assert.assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(),"Friend Requests");
+    }
+
+    @Test(groups = "contacts", priority = 40)
+    public void goToContactsTab() throws Exception {
+
+        tab_bar.findElement(By.name("Contacts")).click();
+        Assert.assertTrue(tab_bar.findElement(By.name("Contacts")).isSelected());
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        //when i tried to do assert by the staticText = "Chats" it failed because it says staticText = "Messages"
+        //i don't understand how it says Messages and we see it Chats so i assert here by attribute:name
+        Assert.assertEquals(nav_bar.getAttribute("name"),"Chats");
+    }
+
+    @Test(groups = "notifications", priority = 50)
+    public void goToNotificationsTab() throws Exception {
+
+        tab_bar.findElement(By.name("Notifications")).click();
+        Assert.assertTrue(tab_bar.findElement(By.name("Notifications")).isSelected());
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        Assert.assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(),"Notifications");
     }
 }

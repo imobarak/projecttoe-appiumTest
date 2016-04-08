@@ -1,0 +1,21 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Group Test Suite" verbose="1">
+    <test name="Group Test" preserve-order="true">
+        <groups>
+            <run>
+                <include name="main" />
+                <include name="requests" />
+                <include name="newsfeed" />
+                <include name="groupsTab" />
+            </run>
+        </groups>
+
+        <classes>
+            <class name="PTTest">
+                <methods>
+                    <exclude name="loginWithInvalidCredentials" />
+                </methods>
+            </class>
+        </classes>
+    </test>
+</suite>

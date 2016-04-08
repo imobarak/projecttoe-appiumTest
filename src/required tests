@@ -1,7 +1,10 @@
 //tests done are marked in *
+TODO: we need to auto accept the ios notification at the beginning
+TODO: we need to check no connectivity doesn't crash any page
+
 main page:
 ==========
-scroll steps
+scroll through steps
 * sign In
 join now
 
@@ -12,9 +15,16 @@ Login:
 join now
 forgot password
 back
-
+        forgot password:
+        ================
+        type wrong email and submit
+        type correct email and submit
 Signup:
 =======
+fill all details
+add image/description
+select groups
+check account is created successfully: image uploaded, description saved, groups joined, newsfeed loads.
 
 NewsFeed tab:
 ==============
@@ -26,22 +36,208 @@ make a group post
 hug post from post details
 * comment on post
 delete post
-scroll up to refresh
-scroll down to refresh
+admin can delete post
+scroll up/down loading
 click more to share
 click on post to view profile
+click myprofile left bar button
+see list of hugs
+* click to groups tab
+scroll to super user post and check it appears correctly
+
+            POST
+            =====
+            loading post and comments loaded
+            click to list of hugs
+            click more share
+            click more report
+
+
+           List of Hugs
+           ============
+           loading user list
+           loading images
+           click to profile / or to chat
 
 Groups tab:
 ===========
+* loading groups: your groups and recommended both loaded
+click search right bar button
+click join a group
+click start a group
+click a group
+check private icon
+check helper mode icon
+check number of users loaded
+check reviews show
+scroll up/down loading
+* click to friend requests tab
+            Search
+            ======
+            search term produces result
+            can click group
+
+            Add group
+            =========
+            can add image and info and click add, check that group is added successfully and image is uploaded correctly
+            alert if group name exists
+
+            Group details
+            =============
+            loading image, name, description, private and helper icons
+            loading of group members
+            correct switches visible
+            toggle switches successfully
+            click view group wall
+            click more shows correct actions
+            click leave group
+            click share group
+            click edit group
+            click admin panel
+            click on write a review or stars
+            click on join group (case private alert appears, case public joins successful)
+
+                    Group Members list
+                    ==================
+                    loading list
+                    loading images
+                    scroll down loads more
+                    can block
+
+                    Admin Panel
+                    ===========
+                    click on message all users
+                    toggle private switch successfully
+                    toggle helper switch successfully
+                    click change keywords
+                    click on blocked users
+                    click on admins list
+                    click on pending list
+
+                            Broadcast Message
+                            =================
+                            make post and check it appears as broadcast
+
+                            Change keywords
+                            ===============
+                            loading old keywords correctly
+                            change keywords and check that you can search using these terms
+
+                            Blocked users
+                            =============
+                            loading
+                            can unblock user
+
+                            Admin list
+                            ===========
+                            loading correctly
+                            scroll up/down loading
+                            click on add helper
+                            click on remove helper
+
+
+                            Pending list
+                            ============
+                            loading list correctly
+                            click on accept
+                            click on deny
+
+                    Reviews page:
+                    =============
+                    loading of reviews
+                    click + to go to rate page
+
+                            Rating page
+                            ===========
+                            click on stars and write comment
+                            click Send
 
 Friend requests tab:
 ====================
+loading: requests and recommended
+loading of images
+click confirm
+click delete
+click add friend
+click remove friend
+scroll up/down loading
+* click to chats tab
+        Friend request profile:
+        =======================
+        click accept
+        click deny
+        click "more" button and accept/deny
 
 Chat tab:
 ==========
+loading chat list
+loading image
+click new chat (+)
+click to chat
+swipe to delete chat
+* click to notifications tab
+          Chat
+          ====
+          messages loaded
+          chat user displayed correctly
+          can send messages
+
+         + page
+          ================
+          click user to private chat
+          click group chat
+
+          Group chat
+          ==========
+          can select (scroll down and select)
+          click start
 
 Notification tab:
 =================
+loading notifications
+loading images
+click on "gave you a hug/commented on your post" goes to post screen loaded correctly
+click on "posted in group/newsfeed" goes to post screen loaded correctly
+click on "joined group" goes to profile screen
+click on "waiting for approval" goes to pending list
+click on "reviewed" goes to reviews list
+click on "congrats you earned the helper badge" goes to my profile and display badge info
+click on "accepted your request" takes you to group details
+scroll down/up loading
 
-Profile section:
-=================
+My Profile:
+===========
+loading name, description and image
+click on edit: change profile and about and save correctly
+click on invite friends
+click  on settings
+click on bagde
+
+            Settings page
+            =============
+            edit and save correctly
+            click on change password
+            receive updates
+            click on report a problem
+            click on terms and conditions
+            click on logout
+                    Change Password
+                    ===============
+                    change password successful
+                    alert password unmatching
+                    alert old password incorrect
+
+                    Report a problem
+                    ================
+                    open mail view and can send
+
+                    Terms and conditions
+                    ====================
+                    opens page correctly
+
+User Profile:
+=============
+if friend goes to chat
+if not friend: image and name and description load correctly
+can flag/unflag profile
+can add friend
