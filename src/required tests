@@ -1,7 +1,8 @@
 //tests done are marked in *
+//tests to be skipped due to implementation issues are marked in @
 TODO: we need to auto accept the ios notification at the beginning
 TODO: we need to check no connectivity doesn't crash any page
-
+TODO: we need to find a way to check that images are loaded since they don't show as elements in tablecells
 main page:
 ==========
 scroll through steps
@@ -13,12 +14,12 @@ Login:
 * valid login
 * invalid login
 join now
-forgot password
+* forgot password
 back
         forgot password:
         ================
-        type wrong email and submit
-        type correct email and submit
+        * type wrong email and submit
+        * type correct email and submit
 Signup:
 =======
 fill all details
@@ -29,6 +30,7 @@ check account is created successfully: image uploaded, description saved, groups
 NewsFeed tab:
 ==============
 * loading public newsfeed
+@ loading images
 loading group newsfeed
 * make a public post
 make a group post
@@ -154,8 +156,8 @@ scroll up/down loading
 
 Friend requests tab:
 ====================
-loading: requests and recommended
-loading of images
+* loading: requests and recommended
+@ loading of images
 click confirm
 click delete
 click add friend
@@ -171,7 +173,7 @@ scroll up/down loading
 Chat tab:
 ==========
 loading chat list
-loading image
+@ loading image
 click new chat (+)
 click to chat
 swipe to delete chat
@@ -194,8 +196,8 @@ swipe to delete chat
 
 Notification tab:
 =================
-loading notifications
-loading images
+* loading notifications
+@ loading images
 click on "gave you a hug/commented on your post" goes to post screen loaded correctly
 click on "posted in group/newsfeed" goes to post screen loaded correctly
 click on "joined group" goes to profile screen
