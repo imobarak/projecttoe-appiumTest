@@ -4,14 +4,14 @@
         <groups>
             <run>
                 <include name="main" />
-                <include name="loginIssues" />
-                <!--include name="login" />
-                <include name="signup" />
+                <!--include name="loginIssues" /-->
+                <include name="login" />
+                <!--include name="signup" />
                 <include name="newsfeed" />
                 <include name="groupsTab" />
-                <include name="requestsTab" />
+                <include name="requestsTab" /-->
                 <include name="contactsTab" />
-                <include name="notificationsTab" /-->
+                <!--include name="notificationsTab" /-->
             </run>
         </groups>
 
@@ -20,6 +20,7 @@
                 <methods>
                     <exclude name="loginWithInvalidCredentials" />
                     <exclude name="goToContactsTab" />
+                    <exclude name="startPrivateChat" />
                     <exclude name="loginWithInvalidCredentials" />
 
                 </methods>

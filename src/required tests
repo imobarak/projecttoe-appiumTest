@@ -1,6 +1,8 @@
 //tests done are marked in *
 //tests to be skipped due to implementation issues are marked in @
-TODO: we need to auto accept the ios notification at the beginning
+//skipped test info:
+    //cannot swipe to delete chats because the chats table view controller doesn't put its elements in the xml
+SOLVED: we need to auto accept the ios notification at the beginning
 TODO: we need to check no connectivity doesn't crash any page
 TODO: we need to find a way to check that images are loaded since they don't show as elements in tablecells
 main page:
@@ -172,27 +174,27 @@ scroll up/down loading
 
 Chat tab:
 ==========
-loading chat list
+* loading chat list
 @ loading image
-click new chat (+)
-click to chat
-swipe to delete chat
+* click new chat (+)
+@ click to chat
+@ swipe to delete chat
 * click to notifications tab
           Chat
           ====
-          messages loaded
-          chat user displayed correctly
-          can send messages
+          * messages loaded
+          * chat user displayed correctly
+          * can send messages
 
          + page
           ================
-          click user to private chat
-          click group chat
+          * click user to private chat
+          * click group chat
 
           Group chat
           ==========
-          can select (scroll down and select)
-          click start
+          * can select (scroll down and select)
+          * click start
 
 Notification tab:
 =================

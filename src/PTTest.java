@@ -11,6 +11,8 @@ import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.IOSElement;
 
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 
@@ -31,6 +33,7 @@ public class PTTest {
     DesiredCapabilities capabilities;
     WebElement nav_bar;
     WebElement tab_bar;
+    String postDate;
     //should have @Before @After if tests are independent and i'd want
     // to execute certain actions before/after every test
     //but in our case they depend on login to continue
@@ -40,6 +43,11 @@ public class PTTest {
         capabilities = new DesiredCapabilities();
         capabilities.setCapability("deviceName","myphone");
         driver = new IOSDriver(new URL("http://127.0.0.1:4723/wd/hub"),capabilities);
+        //accepting push notifications
+        WebDriverWait wait = new WebDriverWait(driver, 15);
+        wait.until(ExpectedConditions.alertIsPresent());
+        Alert errorDialog = driver.switchTo().alert();
+        errorDialog.accept();
         System.out.println("setup done");
     }
 
@@ -176,7 +184,8 @@ public class PTTest {
     @Test(groups = "newsfeed", dependsOnMethods = {"goToNewsFeedTab"}, priority=12)
     public void makePost() throws Exception {
         nav_bar.findElement(By.name("Post")).click();
-        driver.findElementByClassName("UIATextView").sendKeys("Testing using Appium");
+        postDate = new SimpleDateFormat("dd-MM-YY hh:mm").format(new Date());
+        driver.findElementByClassName("UIATextView").sendKeys("Testing new post through Appium " + postDate );
         nav_bar.findElement(By.name("Post")).click();
         System.out.println("makepost");
         checkPostSuccessful();
@@ -193,7 +202,7 @@ public class PTTest {
        WebElement element = rows.get(0).findElements(By.className("UIAStaticText")).get(0);
         Assert.assertEquals("imobarak3", element.getText());
         element = rows.get(0).findElements(By.className("UIAStaticText")).get(1);
-        Assert.assertEquals("Testing using Appium", element.getText());
+        Assert.assertEquals("Testing new post through Appium " + postDate, element.getText());
         System.out.println("checkpostsuccessful");
 
     }
@@ -225,7 +234,7 @@ public class PTTest {
         Integer numOfCellsBefore = ((List<MobileElement>)driver.findElementsByXPath("//UIATableView[1]/UIATableCell")).size();
         table = (IOSElement)driver.findElementsByClassName("UIATableView").get(1);
         rows = table.findElementsByClassName("UIATableCell");
-        rows.get(0).findElement(By.className("UIATextView")).sendKeys("Comment using Appium");
+        rows.get(0).findElement(By.className("UIATextView")).sendKeys("Comment through Appium " + postDate);
         rows.get(0).findElement(By.className("UIAButton")).click();
         new WebDriverWait(driver,15);
         table = (IOSElement)driver.findElementsByClassName("UIATableView").get(0);
@@ -332,6 +341,91 @@ public class PTTest {
         Assert.assertTrue(tableView.getAttribute("value").contains("rows"));
 
     }
+
+    @Test(groups = "contactsTab",  priority = 42)
+    public void startPrivateChat() throws Exception {
+        if(!tab_bar.findElement(By.name("Contacts")).isSelected())
+            tab_bar.findElement(By.name("Contacts")).click();
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        nav_bar.findElement(By.name("Add")).click();
+        IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+        Assert.assertTrue(tableView.getAttribute("value").contains("rows"));
+        String chatToUser = "mob8";
+        tableView.scrollTo(chatToUser).click();
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        Assert.assertTrue(nav_bar.getAttribute("name").equals(chatToUser));
+
+        //assert that previous messages show correctly
+        List<IOSElement> elements =  driver.findElementsByXPath("//UIACollectionView/UIACollectionCell");
+        Assert.assertTrue(elements.size() > 0,"Messages loaded");
+
+        MobileElement textView = (MobileElement) driver.findElementByXPath("//UIAToolbar/UIATextView");
+        textView.clear();
+        String date = new SimpleDateFormat("dd-MM-YY hh:mm").format(new Date());
+        textView.sendKeys("Hi! Testing private chat through Appium " + date );
+        driver.findElementByXPath("//UIAToolbar/UIAButton[2]").click();
+
+        elements =  driver.findElementsByXPath("//UIACollectionView/UIACollectionCell");
+        Assert.assertTrue(elements.size() > 0,"Messages loaded");
+        Boolean stringVisible = false;
+        Boolean sent = false;
+        if(elements.get(elements.size()-1).getAttribute("name").contains("Hi! Testing private chat through Appium " + date)) {
+            stringVisible = true;
+        }
+
+        elements =  driver.findElementsByXPath("//UIACollectionView/UIAStaticText");
+        for (IOSElement element : elements) {
+            if(element.getAttribute("name").contains("Sent")) {
+                sent = true;
+                break;
+            }
+        }
+        Assert.assertTrue(stringVisible, "Message is visible");
+        Assert.assertTrue(sent,"Message Sent successfully");
+    }
+
+    @Test(groups = "contactsTab",  priority = 43)
+    public void startGroupChat() throws Exception {
+       //force it to start from main contacts page
+        tab_bar.findElement(By.name("Contacts")).click();
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        nav_bar.findElement(By.name("Add")).click();
+        //nav_bar = driver.findElementByClassName("UIANavigationBar");
+        nav_bar.findElement(By.name("Group Chat")).click();
+        IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+        Assert.assertTrue(tableView.getAttribute("value").contains("rows"));
+        String[] groupChatMembers = new String[]{"imobaraktesting", "mob8"};
+        for(String member : groupChatMembers){
+            tableView.scrollTo(member).click();
+        }
+        nav_bar.findElement(By.name("Start")).click();
+        Assert.assertTrue(nav_bar.getAttribute("name").contains(groupChatMembers[0]), "Group members added");
+        Assert.assertTrue(nav_bar.getAttribute("name").contains(groupChatMembers[1]), "Group members added");
+        MobileElement textView = (MobileElement) driver.findElementByXPath("//UIAToolbar/UIATextView");
+        textView.clear();
+        String date = new SimpleDateFormat("dd-MM-YY hh:mm").format(new Date());
+        textView.sendKeys("Hi! Testing group chat through Appium " + date );
+        driver.findElementByXPath("//UIAToolbar/UIAButton[2]").click();
+
+        List<IOSElement> elements =  driver.findElementsByXPath("//UIACollectionView/UIACollectionCell");
+        Assert.assertTrue(elements.size() > 0,"Messages loaded");
+        Boolean stringVisible = false;
+        Boolean sent = false;
+        if(elements.get(elements.size()-1).getAttribute("name").contains("Hi! Testing group chat through Appium " + date)) {
+            stringVisible = true;
+        }
+
+        elements =  driver.findElementsByXPath("//UIACollectionView/UIAStaticText");
+        for (IOSElement element : elements) {
+            if(element.getAttribute("name").contains("Sent")) {
+                sent = true;
+                break;
+            }
+        }
+        Assert.assertTrue(stringVisible, "Message is visible");
+        Assert.assertTrue(sent,"Message Sent successfully");
+    }
+
 
     @Test(groups = "notificationsTab", priority = 50)
     public void goToNotificationsTab() throws Exception {
