@@ -7,11 +7,11 @@
                 <!--include name="loginIssues" /-->
                 <include name="login" />
                 <!--include name="signup" />
-                <include name="newsfeed" />
+                <include name="newsfeed" /-->
                 <include name="groupsTab" />
-                <include name="requestsTab" /-->
+                <!--include name="requestsTab" />
                 <include name="contactsTab" />
-                <!--include name="notificationsTab" /-->
+                <include name="notificationsTab" /-->
             </run>
         </groups>
 
@@ -19,10 +19,9 @@
             <class name="PTTest">
                 <methods>
                     <exclude name="loginWithInvalidCredentials" />
-                    <exclude name="goToContactsTab" />
-                    <exclude name="startPrivateChat" />
-                    <exclude name="loginWithInvalidCredentials" />
-
+                    <exclude name="goToGroupsTab" />
+                    <exclude name="loadGroups" />
+                    <exclude name="addGroup" />
                 </methods>
             </class>
         </classes>

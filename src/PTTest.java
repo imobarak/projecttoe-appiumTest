@@ -1,7 +1,6 @@
 import java.net.MalformedURLException;
 
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.testng.Assert;
@@ -15,10 +14,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-
-import org.openqa.selenium.NoSuchElementException;
-
-import org.openqa.selenium.WebElement;
 
 import org.openqa.selenium.remote.DesiredCapabilities;
 
@@ -34,6 +29,7 @@ public class PTTest {
     WebElement nav_bar;
     WebElement tab_bar;
     String postDate;
+    Boolean isNotificationSuccess;
     //should have @Before @After if tests are independent and i'd want
     // to execute certain actions before/after every test
     //but in our case they depend on login to continue
@@ -43,11 +39,16 @@ public class PTTest {
         capabilities = new DesiredCapabilities();
         capabilities.setCapability("deviceName","myphone");
         driver = new IOSDriver(new URL("http://127.0.0.1:4723/wd/hub"),capabilities);
-        //accepting push notifications
-        WebDriverWait wait = new WebDriverWait(driver, 15);
-        wait.until(ExpectedConditions.alertIsPresent());
-        Alert errorDialog = driver.switchTo().alert();
-        errorDialog.accept();
+       try{
+                  //accepting push notifications
+           WebDriverWait wait = new WebDriverWait(driver, 15);
+           wait.until(ExpectedConditions.alertIsPresent());
+           Alert errorDialog = driver.switchTo().alert();
+           errorDialog.accept();
+       }catch (Exception e){
+           //did not handle the ios notification
+       }
+
         System.out.println("setup done");
     }
 
@@ -139,12 +140,13 @@ public class PTTest {
         Assert.assertEquals(errorDialog.getText(),"Login failed. Username and/or Password incorrect");
         errorDialog.accept();
         System.out.println("invalidLogin done");
+
+        driver.findElement(By.xpath("//UIATableCell[1]/UIATextField")).clear();
+        driver.findElement(By.xpath("//UIATableCell[2]/UIASecureTextField")).clear();
     }
 
     @Test(groups = "login", priority=2)
     public void loginWithValidCredentials() throws MalformedURLException {
-        driver.findElement(By.xpath("//UIATableCell[1]/UIATextField")).clear();
-        driver.findElement(By.xpath("//UIATableCell[2]/UIASecureTextField")).clear();
         driver.findElement(By.xpath("//UIATableCell[1]/UIATextField")).sendKeys("imobarak3");
         driver.findElement(By.xpath("//UIATableCell[2]/UIASecureTextField")).sendKeys("sky");
         driver.findElement(By.name("SUBMIT")).click();
@@ -274,6 +276,71 @@ public class PTTest {
         cells = driver.findElements(By.xpath("//UIATableCell[preceding-sibling::UIATableGroup[1]/@name = 'RECOMMENDED SUPPORT GROUPS']"));
         Assert.assertNotEquals(cells.size(), 0);
 
+    }
+
+    @Test(groups = "groupsTab", priority = 22)
+    public void searchGroup() throws Exception {
+
+        tab_bar.findElement(By.name("Groups")).click();
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+        try{
+            tableView.scrollTo("Join a Support Group").click();
+        }catch (NotFoundException e){
+            Assert.fail("Unable to start search group");
+        }
+        //nav_bar = driver.findElementByClassName("UIANavigationBar");
+        nav_bar.findElement(By.className("UIASearchBar")).sendKeys("a");
+//TODO: add wait here in case the connection is slow
+       if( driver.findElementsByXPath("//UIATableView/UIATableCell").size() > 0){
+           ((IOSElement)driver.findElementByXPath("//UIATableView")).scrollTo("anxiety").click();
+           Assert.assertTrue(nav_bar.getAttribute("name").equals("Group"),"Segue to group");
+       }else
+           Assert.fail("Search term did not return any results");
+
+    }
+
+    @Test(groups = "groupsTab", priority = 23)
+    public void addGroup() throws Exception {
+        try{
+            nav_bar = driver.findElementByClassName("UIANavigationBar");
+            nav_bar.findElement(By.name("Back")).click();
+        }catch (Exception e){
+
+        }
+        tab_bar.findElement(By.name("Groups")).click();
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+        try{
+            tableView.scrollTo("Start a Support Group").click();
+        }catch (NotFoundException e){
+            Assert.fail("Unable to start add group");
+        }
+        List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
+        String dateNow = new SimpleDateFormat("dd-MM-YY hh:mm").format(new Date());
+        tableCells.get(1).findElementByClassName("UIATextField").sendKeys("Appium Group " + dateNow);
+        tableCells.get(2).findElementByClassName("UIATextView").sendKeys("Appium description");
+        tableCells.get(3).findElementByClassName("UIATextView").sendKeys("Appium keywords");
+        tableCells.get(4).findElementByClassName("UIASwitch").click();
+        tableCells.get(5).findElementByName("Add").click();
+
+        try{
+            //handling alert
+            WebDriverWait wait = new WebDriverWait(driver, 15);
+            wait.until(ExpectedConditions.alertIsPresent());
+            Alert errorDialog = driver.switchTo().alert();
+            Assert.assertNotEquals(errorDialog.getText().toLowerCase(), "sorry, this group name already exists.", "Group name already exists");
+            errorDialog.accept();
+        }catch (Exception e){
+            //no alerts
+        }
+        try{
+            WebDriverWait wait = new WebDriverWait(driver, 15);
+            new WebDriverWait(driver,15).until(ExpectedConditions.presenceOfElementLocated(By.name("Success!")));
+            driver.findElementByName("No Thanks").click();
+        }catch (Exception e){
+            Assert.fail("Did not add group successfully" + e.getMessage());
+        }
     }
 
     @Test(groups = "requestsTab", priority = 30)
@@ -443,5 +510,88 @@ public class PTTest {
 
         List<MobileElement> tableCells = driver.findElements(By.xpath("//UIATableView/UIATableCell"));
         Assert.assertNotEquals(tableCells.size(), 0);
+    }
+
+    @Test(groups = "notificationsTab",  priority = 52)
+    public void browseFromNotifications() throws Exception {
+        //force it to start from main notifications page
+        tab_bar.findElement(By.name("Notifications")).click();
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+        Assert.assertTrue(tableView.getAttribute("value").contains("rows"));
+        isNotificationSuccess = true;
+        String[] searchTerms = { "hug", "commented", "profile","approval", "posted", "reviewed",  "congratulations", "assigned", "accepted" };
+       for(String searchTerm : searchTerms) {
+           scrollToNotification(searchTerm, tableView);
+       }
+        if(!isNotificationSuccess)
+            Assert.fail("Did not browse to all notifications successfully, check logs for issues.");
+
+    }
+
+    private void outputInfo(String searchTerm, String expectedTitle, String navigationTitle, String scrollFrom){
+        System.out.println("Did not browse to correct pending requests screen with search term: " + searchTerm);
+        System.out.println("  --> Nav bar title of screen: " + navigationTitle);
+        System.out.println("  --> Expected to be: " + expectedTitle);
+        System.out.println("  --> Row record tested: " +scrollFrom);
+        isNotificationSuccess = false;
+    }
+    private void scrollToNotification(String searchTerm, IOSElement tableView) {
+        try {
+            MobileElement element = tableView.scrollTo(searchTerm);
+            String rowString = element.getAttribute("name");
+            String[] words = rowString.split("\\s");
+            element.click();
+            switch (searchTerm.toLowerCase()){
+                case "hug": case "commented": case "posted":
+                    try
+                    {
+                        Alert errorDialog = driver.switchTo().alert();
+                        System.out.println("Alert shown when browsing to post: "+ errorDialog.getText());
+                        errorDialog.accept();
+                    }
+                    catch (NoAlertPresentException Ex)
+                    {
+
+                    }finally {
+                        if(!nav_bar.getAttribute("name").equals("Post")) {
+                            outputInfo(searchTerm,"Post", nav_bar.getAttribute("name"), rowString);
+                        }
+                        nav_bar.findElement(By.name("Back")).click();
+                    }
+                    break;
+                case "profile": case "accepted":
+                    //either profile or messages
+                    if(!nav_bar.getAttribute("name").equals(words[0])) {
+                        outputInfo(searchTerm, words[0], nav_bar.getAttribute("name"), rowString);
+                    }
+                    nav_bar.findElement(By.name("Back")).click();
+                    break;
+                case "approval":
+                    if(!nav_bar.getAttribute("name").equals("Pending Requests")) {
+                        outputInfo(searchTerm, "Pending Requests", nav_bar.getAttribute("name"), rowString);
+                    }
+                    nav_bar.findElement(By.name("Back")).click();
+                    break;
+                case "reviewed":
+                    if(!nav_bar.getAttribute("name").equals("Reviews")) {
+                        outputInfo(searchTerm, "Reviews", nav_bar.getAttribute("name"), rowString);
+                    }
+                    nav_bar.findElement(By.name("Back")).click();
+                    break;
+                case "congratulations":
+                    if(!nav_bar.getAttribute("name").equals("My Profile")) {
+                        outputInfo(searchTerm, "My Profile", nav_bar.getAttribute("name"), rowString);
+                    }
+                    nav_bar.findElement(By.name("Back")).click();
+                    break;
+                default:
+                    break;
+            }
+
+        }catch (Exception e){
+            System.out.println("Could not find notification with search term: " + searchTerm);
+            isNotificationSuccess = false;
+        }
     }
 }

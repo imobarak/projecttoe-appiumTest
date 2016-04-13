@@ -2,6 +2,7 @@
 //tests to be skipped due to implementation issues are marked in @
 //skipped test info:
     //cannot swipe to delete chats because the chats table view controller doesn't put its elements in the xml
+    //did not test add photo for add group
 SOLVED: we need to auto accept the ios notification at the beginning
 TODO: we need to check no connectivity doesn't crash any page
 TODO: we need to find a way to check that images are loaded since they don't show as elements in tablecells
@@ -78,8 +79,8 @@ scroll up/down loading
 * click to friend requests tab
             Search
             ======
-            search term produces result
-            can click group
+            *search term produces result
+            *can click group
 
             Add group
             =========
@@ -200,13 +201,13 @@ Notification tab:
 =================
 * loading notifications
 @ loading images
-click on "gave you a hug/commented on your post" goes to post screen loaded correctly
-click on "posted in group/newsfeed" goes to post screen loaded correctly
-click on "joined group" goes to profile screen
-click on "waiting for approval" goes to pending list
-click on "reviewed" goes to reviews list
-click on "congrats you earned the helper badge" goes to my profile and display badge info
-click on "accepted your request" takes you to group details
+ click on "gave you a hug/commented on your post" goes to post screen loaded correctly
+* click on "posted in group/newsfeed" goes to post screen loaded correctly
+* click on "joined group" goes to profile screen
+* click on "waiting for approval" goes to pending list
+ click on "reviewed" goes to reviews list
+ click on "congrats you earned the helper badge" goes to my profile and display badge info
+ click on "accepted your request" takes you to group details
 scroll down/up loading
 
 My Profile:
