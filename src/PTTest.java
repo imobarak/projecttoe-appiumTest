@@ -20,6 +20,9 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.testng.annotations.*;
 import org.testng.Assert.*;
 
+import static org.testng.Assert.*;
+import static org.testng.Assert.assertTrue;
+
 /**
  * Created by imobarak on 3/31/16.
  */
@@ -62,7 +65,7 @@ public class PTTest {
     @Test(groups = "main", priority = 1)
     public  void signIn() throws Exception {
         WebElement element = driver.findElement(By.name("Sign In"));
-        Assert.assertNotNull(element);
+        assertNotNull(element);
         element.click();
     }
 
@@ -79,8 +82,9 @@ public class PTTest {
         wait.until(ExpectedConditions.alertIsPresent());
 
         Alert errorDialog = driver.switchTo().alert();
-        Assert.assertEquals(errorDialog.getText(), "Please provide a valid E-mail Address");
+        String errorString = errorDialog.getText();
         errorDialog.accept();
+        assertEquals(errorString, "Please provide a valid E-mail Address");
     }
 
     @Test(groups = "loginIssues", priority=3)
@@ -96,8 +100,9 @@ public class PTTest {
         wait.until(ExpectedConditions.alertIsPresent());
 
         Alert errorDialog = driver.switchTo().alert();
-        Assert.assertEquals(errorDialog.getText(), "We'll send you an e-mail with your username and new password.");
+        String errorString = errorDialog.getText();
         errorDialog.accept();
+        assertEquals(errorString, "We'll send you an e-mail with your username and new password.");
     }
 
     @Test(groups = "signup", priority=2)
@@ -137,8 +142,9 @@ public class PTTest {
         wait.until(ExpectedConditions.alertIsPresent());
 
         Alert errorDialog = driver.switchTo().alert();
-        Assert.assertEquals(errorDialog.getText(),"Login failed. Username and/or Password incorrect");
+        String errorString = errorDialog.getText();
         errorDialog.accept();
+        assertEquals(errorString, "Login failed. Username and/or Password incorrect");
         System.out.println("invalidLogin done");
 
         driver.findElement(By.xpath("//UIATableCell[1]/UIATextField")).clear();
@@ -163,9 +169,9 @@ public class PTTest {
         nav_bar = driver.findElementByClassName("UIANavigationBar");
         tab_bar = driver.findElementByClassName("UIATabBar");
         tab_bar.findElement(By.name("Newsfeed")).click();
-        Assert.assertTrue(tab_bar.findElement(By.name("Newsfeed")).isSelected());
+        assertTrue(tab_bar.findElement(By.name("Newsfeed")).isSelected());
         nav_bar = driver.findElementByClassName("UIANavigationBar");
-        Assert.assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(), "Newsfeed");
+        assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(), "Newsfeed");
 
     }
 
@@ -173,12 +179,12 @@ public class PTTest {
     public void loadNewsfeed() throws Exception {
         //first view in UICatalog is a table
         IOSElement table = (IOSElement)driver.findElementByClassName("UIATableView");
-        Assert.assertNotNull(table);
+        assertNotNull(table);
         //is number of cells/rows inside table correct
         List<MobileElement> rows = table.findElementsByClassName("UIATableCell");
-        Assert.assertEquals(10, rows.size());
+        assertEquals(10, rows.size());
         //is the username loaded correctly for now i just check if not empty
-        Assert.assertNotSame("", rows.get(0).findElement(By.className("UIAStaticText")).getText());
+        assertNotSame("", rows.get(0).findElement(By.className("UIAStaticText")).getText());
         System.out.println("loadNewsfeed");
 
     }
@@ -196,15 +202,15 @@ public class PTTest {
     public void checkPostSuccessful() throws Exception {
         //first view in UICatalog is a table
         IOSElement table = (IOSElement)driver.findElementByClassName("UIATableView");
-        Assert.assertNotNull(table);
+        assertNotNull(table);
         //is number of cells/rows inside table correct
         List<MobileElement> rows = table.findElementsByClassName("UIATableCell");
 
        //check that username is correct and message is correct
        WebElement element = rows.get(0).findElements(By.className("UIAStaticText")).get(0);
-        Assert.assertEquals("imobarak3", element.getText());
+        assertEquals("imobarak3", element.getText());
         element = rows.get(0).findElements(By.className("UIAStaticText")).get(1);
-        Assert.assertEquals("Testing new post through Appium " + postDate, element.getText());
+        assertEquals("Testing new post through Appium " + postDate, element.getText());
         System.out.println("checkpostsuccessful");
 
     }
@@ -221,7 +227,7 @@ public class PTTest {
         new WebDriverWait(driver,15);
 
         Integer numOfHugsAfter =Integer.parseInt(element.getText().substring(0,1));
-        Assert.assertEquals(new Long(numOfHugsAfter), new Long(numOfHugsBefore + 1));
+        assertEquals(new Long(numOfHugsAfter), new Long(numOfHugsBefore + 1));
         System.out.println("hugpost");
 
     }
@@ -241,7 +247,7 @@ public class PTTest {
         new WebDriverWait(driver,15);
         table = (IOSElement)driver.findElementsByClassName("UIATableView").get(0);
         rows = table.findElementsByClassName("UIATableCell");
-        Assert.assertEquals(numOfCellsBefore + 1, rows.size());
+        assertEquals(numOfCellsBefore + 1, rows.size());
         System.out.println("comment post");
     }
 
@@ -249,36 +255,36 @@ public class PTTest {
     public void goToGroupsTab() throws Exception {
 
         tab_bar.findElement(By.name("Groups")).click();
-        Assert.assertTrue(tab_bar.findElement(By.name("Groups")).isSelected());
+        assertTrue(tab_bar.findElement(By.name("Groups")).isSelected());
         nav_bar = driver.findElementByClassName("UIANavigationBar");
-        Assert.assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(), "Support Groups");
+        assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(), "Support Groups");
     }
 
     @Test(groups = "groupsTab",  priority = 21)
     public void loadGroups() throws Exception {
         List<MobileElement> tableGroups = driver.findElements(By.xpath("//UIATableView/UIATableGroup"));
         //assert that there are 3 sections
-        Assert.assertEquals(tableGroups.size(), 3);
+        assertEquals(tableGroups.size(), 3);
 
         //assert that this section exists
         WebElement supportGroups = driver.findElementByName("YOUR SUPPORT GROUPS");
-        Assert.assertNotNull(supportGroups);
+        assertNotNull(supportGroups);
 
         //assert that there are groups under this section - not empty
         List<MobileElement> cells = driver.findElements(By.xpath("//UIATableCell[preceding-sibling::UIATableGroup[1]/@name = 'YOUR SUPPORT GROUPS']"));
-       Assert.assertNotEquals(cells.size(), 0);
+       assertNotEquals(cells.size(), 0);
 
         //assert that this section exists
         supportGroups = driver.findElementByName("RECOMMENDED SUPPORT GROUPS");
-        Assert.assertNotNull(supportGroups);
+        assertNotNull(supportGroups);
 
         //assert that there are groups under this section - not empty
         cells = driver.findElements(By.xpath("//UIATableCell[preceding-sibling::UIATableGroup[1]/@name = 'RECOMMENDED SUPPORT GROUPS']"));
-        Assert.assertNotEquals(cells.size(), 0);
+        assertNotEquals(cells.size(), 0);
 
     }
 
-    @Test(groups = "groupsTab", priority = 22)
+    @Test(groups = "groupsTab", priority = 22, enabled = false)
     public void searchGroup() throws Exception {
 
         tab_bar.findElement(By.name("Groups")).click();
@@ -287,16 +293,16 @@ public class PTTest {
         try{
             tableView.scrollTo("Join a Support Group").click();
         }catch (NotFoundException e){
-            Assert.fail("Unable to start search group");
+            fail("Unable to start search group");
         }
         //nav_bar = driver.findElementByClassName("UIANavigationBar");
         nav_bar.findElement(By.className("UIASearchBar")).sendKeys("a");
 //TODO: add wait here in case the connection is slow
        if( driver.findElementsByXPath("//UIATableView/UIATableCell").size() > 0){
            ((IOSElement)driver.findElementByXPath("//UIATableView")).scrollTo("anxiety").click();
-           Assert.assertTrue(nav_bar.getAttribute("name").equals("Group"),"Segue to group");
+           assertTrue(nav_bar.getAttribute("name").equals("Group"), "Segue to group");
        }else
-           Assert.fail("Search term did not return any results");
+           fail("Search term did not return any results");
 
     }
 
@@ -309,12 +315,11 @@ public class PTTest {
 
         }
         tab_bar.findElement(By.name("Groups")).click();
-        nav_bar = driver.findElementByClassName("UIANavigationBar");
-        IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+       IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
         try{
             tableView.scrollTo("Start a Support Group").click();
         }catch (NotFoundException e){
-            Assert.fail("Unable to start add group");
+            fail("Unable to start add group");
         }
         List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
         String dateNow = new SimpleDateFormat("dd-MM-YY hh:mm").format(new Date());
@@ -329,8 +334,9 @@ public class PTTest {
             WebDriverWait wait = new WebDriverWait(driver, 15);
             wait.until(ExpectedConditions.alertIsPresent());
             Alert errorDialog = driver.switchTo().alert();
-            Assert.assertNotEquals(errorDialog.getText().toLowerCase(), "sorry, this group name already exists.", "Group name already exists");
+            String errorString = errorDialog.getText();
             errorDialog.accept();
+            assertNotEquals(errorString.toLowerCase(), "sorry, this group name already exists.", "Group name already exists");
         }catch (Exception e){
             //no alerts
         }
@@ -339,17 +345,245 @@ public class PTTest {
             new WebDriverWait(driver,15).until(ExpectedConditions.presenceOfElementLocated(By.name("Success!")));
             driver.findElementByName("No Thanks").click();
         }catch (Exception e){
-            Assert.fail("Did not add group successfully" + e.getMessage());
+            fail("Did not add group successfully");
         }
+    }
+
+    @Test(groups = "groupsTab", priority = 24, enabled = false)
+    public void checkGroupDetails() throws Exception {
+        try{
+            nav_bar = driver.findElementByClassName("UIANavigationBar");
+            nav_bar.findElement(By.name("Back")).click();
+        }catch (Exception e){
+
+        }
+        tab_bar.findElement(By.name("Groups")).click();
+        IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+        try{
+            tableView.scrollTo("Appium_Group").click();
+        }catch (NotFoundException e){
+            fail("Unable to find group");
+        }
+
+        //TODO see how we can check if private and helper
+        List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
+        try{
+            String reviewsCount = tableCells.get(1).findElementByClassName("UIAStaticText").getText();
+            if(reviewsCount.contains("Review")){
+                System.out.println("Group has no reviews");
+            }else{
+
+                reviewsCount = reviewsCount.substring(reviewsCount.indexOf("(") + 1);
+                reviewsCount = reviewsCount.substring(0, reviewsCount.indexOf(")"));
+
+                System.out.println("Group has " + reviewsCount + "reviews");
+            }
+
+        }catch(Exception e){
+            fail("Could not define group reviews");
+        }
+
+        assertTrue(tableCells.get(2).findElementByClassName("UIAStaticText").getText().contains("Appium_Group"), "Group name incorrect");
+        assertTrue(tableCells.get(2).findElementByClassName("UIATextView").getText().contains("Appium description"), "Group description incorrect");
+
+        List<IOSElement> tableGroups = driver.findElementsByXPath("//UIATableView/UIATableGroup");
+       try {
+           String usersCount = tableGroups.get(1).findElementByClassName("UIAStaticText").getText();
+
+           usersCount = usersCount.substring(usersCount.indexOf("(") + 1);
+           usersCount = usersCount.substring(0, usersCount.indexOf(")"));
+           System.out.println("Group has " + usersCount + " users");
+       }
+       catch (Exception e){
+           fail("Could not define group users count");
+       }
+
+        try {
+            for(int i=4; i<=6; i++) {
+                assertTrue(tableCells.get(i).findElementByClassName("UIASwitch").isEnabled(), "Switch for " + tableCells.get(i).findElementByClassName("UIAStaticText").getText() + " is not visible");
+            }
+        }catch (Exception e){
+            fail("Could not define group alerts");
+        }
+
+        assertTrue(tableCells.get(8).findElementByClassName("UIAStaticText").getText().contains("View Group Wall"), "View Group Wall button not found");
+
+    }
+
+    //Assumes: user joined Appium_Public_Group, which is a public group and he is not the admin
+    @Test(groups = "groupsTab", priority = 25, enabled = false)
+    public void canLeaveJoinPublicGroup() throws Exception {
+        try{
+            nav_bar = driver.findElementByClassName("UIANavigationBar");
+            nav_bar.findElement(By.name("Back")).click();
+        }catch (Exception e){
+
+        }
+        tab_bar.findElement(By.name("Groups")).click();
+        IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+        try{
+            tableView.scrollTo("Appium_Public").click();
+        }catch (NotFoundException e){
+            fail("Unable to find group");
+        }
+
+
+        //assertTrue(tableCells.get(8).findElementByClassName("UIAStaticText").toString().contains("View Group Wall"), "View Group Wall button not found");
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        nav_bar.findElement(By.name("more")).click();
+
+        List<IOSElement> actionCells = driver.findElementsByXPath("//UIAActionSheet/UIACollectionView");
+        Boolean leaveGroupFound = false;
+        for(IOSElement actionCell : actionCells){
+            try{
+                actionCell.findElementByName("Leave Group").click();
+                leaveGroupFound = true;
+                try{
+                    //handling alert
+                    WebDriverWait wait = new WebDriverWait(driver, 15);
+                    wait.until(ExpectedConditions.alertIsPresent());
+                    Alert errorDialog = driver.switchTo().alert();
+                    errorDialog.accept();
+                    fail("Could not leave group alert is: " + errorDialog.getText());
+                }catch (Exception e){
+                    //no alerts = worked as expected
+                }
+                try{
+                    List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
+                    tableCells.get(4).findElementByName("Join Group").click();
+                    WebDriverWait wait = new WebDriverWait(driver, 15);
+                    new WebDriverWait(driver,15).until(ExpectedConditions.presenceOfElementLocated(By.name("Success!")));
+                    driver.findElementByName("No Thanks").click();
+                }catch (Exception e){
+                    fail("Did not join group successfully");
+                }
+                break;
+            }catch (Exception e){
+                 //not leave group action
+            }
+        }
+        assertTrue(leaveGroupFound, "Could not leave group");
+    }
+
+    //Assumes: user joined Appium_Private_Group, which is a private group and he is not the admin
+    @Test(groups = "groupsTab", priority = 26, enabled = false)
+    public void canLeaveJoinPrivateGroup() throws Exception {
+        try{
+            nav_bar = driver.findElementByClassName("UIANavigationBar");
+            nav_bar.findElement(By.name("Back")).click();
+        }catch (Exception e){
+
+        }
+        tab_bar.findElement(By.name("Groups")).click();
+        IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+        try{
+            tableView.scrollTo("Appium_Private").click();
+        }catch (NotFoundException e){
+            fail("Unable to find group");
+        }
+
+
+         nav_bar = driver.findElementByClassName("UIANavigationBar");
+        nav_bar.findElement(By.name("more")).click();
+
+        List<IOSElement> actionCells = driver.findElementsByXPath("//UIAActionSheet/UIACollectionView");
+        Boolean leaveGroupFound = false;
+        for(IOSElement actionCell : actionCells){
+            try{
+                actionCell.findElementByName("Leave Group").click();
+                leaveGroupFound = true;
+                try{
+                    //handling alert
+                    WebDriverWait wait = new WebDriverWait(driver, 15);
+                    wait.until(ExpectedConditions.alertIsPresent());
+                    Alert errorDialog = driver.switchTo().alert();
+                    errorDialog.accept();
+                    fail("Could not leave group alert is: " + errorDialog.getText());
+                }catch (Exception e){
+                    //no alerts = worked as expected
+                }
+                try{
+                    List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
+                    tableCells.get(4).findElementByName("Join Group").click();
+                    WebDriverWait wait = new WebDriverWait(driver, 15);
+                    wait.until(ExpectedConditions.alertIsPresent());
+                    Alert alertDialog = driver.switchTo().alert();
+                    String alertText = alertDialog.getText();
+                    alertDialog.accept();
+                    assertTrue(alertText.toLowerCase().contains("waiting for approval"), "Did not receive alert notifying user that he is pending approval \\n alert:" + alertText);
+                    //we can also assert that button name changed to "Join Request Sent"
+                }catch (Exception e){
+                    fail("Did not join group successfully");
+                }
+                break;
+            }catch (Exception e){
+                //not leave group action
+            }
+        }
+        assertTrue(leaveGroupFound, "Could not leave group");
+    }
+
+    @Test(groups = "groupsTab", priority = 27)
+    public void canBroadcastMessage() throws Exception {
+        try{
+            nav_bar = driver.findElementByClassName("UIANavigationBar");
+            nav_bar.findElement(By.name("Back")).click();
+        }catch (Exception e){
+
+        }
+        tab_bar.findElement(By.name("Groups")).click();
+        IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+        try{
+            tableView.scrollTo("Appium_Public").click();
+        }catch (NotFoundException e){
+            fail("Unable to find group");
+        }
+
+
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        nav_bar.findElement(By.name("more")).click();
+
+        List<IOSElement> actionCells = driver.findElementsByXPath("//UIAActionSheet/UIACollectionView");
+        Boolean adminPanelFound = false;
+        for(IOSElement actionCell : actionCells){
+            try{
+                actionCell.findElementByName("Admin Panel").click();
+                adminPanelFound = true;
+                try{
+                    List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
+                    tableCells.get(0).findElementByName("Message All Users").click();
+                    postDate = new SimpleDateFormat("dd-MM-YY hh:mm").format(new Date());
+                    driver.findElementByClassName("UIATextView").sendKeys("Group broadcast through Appium " + postDate);
+                    nav_bar.findElement(By.name("Post")).click();
+
+                    //first view in UICatalog is a table
+                    IOSElement table = (IOSElement)driver.findElementByClassName("UIATableView");
+                    List<MobileElement> rows = table.findElementsByClassName("UIATableCell");
+
+                    //check that username is correct and message is correct
+                    WebElement element = rows.get(0).findElements(By.className("UIAStaticText")).get(0);
+                    assertEquals("Appium_Public_Group", element.getText());
+                    element = rows.get(0).findElements(By.className("UIAStaticText")).get(1);
+                    assertEquals("Group broadcast through Appium " + postDate, element.getText());
+                    System.out.println("broadcast message successful");
+                }catch (Exception e){
+                    fail("Did not broadcast successfully: "+ e.getLocalizedMessage());
+                }
+                break;
+            }catch (Exception e){
+                //not admin panel action
+            }
+        }
+        assertTrue(adminPanelFound, "Could not find 'admin panel' in actionsheet");
     }
 
     @Test(groups = "requestsTab", priority = 30)
     public void goToRequestsTab() throws Exception {
 
         tab_bar.findElement(By.name("Request")).click();
-        Assert.assertTrue(tab_bar.findElement(By.name("Request")).isSelected());
+        assertTrue(tab_bar.findElement(By.name("Request")).isSelected());
         nav_bar = driver.findElementByClassName("UIANavigationBar");
-        Assert.assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(),"Friend Requests");
+        assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(), "Friend Requests");
     }
 
     @Test(groups = "requestsTab",  priority = 31)
@@ -383,19 +617,19 @@ public class PTTest {
             }
         }
         //both tables visible
-        Assert.assertTrue(friendRequests);
-        Assert.assertTrue(recommendedUsers);
+        assertTrue(friendRequests);
+        assertTrue(recommendedUsers);
     }
 
     @Test(groups = "contactsTab", priority = 40)
     public void goToContactsTab() throws Exception {
 
         tab_bar.findElement(By.name("Contacts")).click();
-        Assert.assertTrue(tab_bar.findElement(By.name("Contacts")).isSelected());
+        assertTrue(tab_bar.findElement(By.name("Contacts")).isSelected());
         nav_bar = driver.findElementByClassName("UIANavigationBar");
         //when i tried to do assert by the staticText = "Chats" it failed because it says staticText = "Messages"
         //i don't understand how it says Messages and we see it Chats so i assert here by attribute:name
-        Assert.assertEquals(nav_bar.getAttribute("name"),"Chats");
+        assertEquals(nav_bar.getAttribute("name"), "Chats");
     }
 
     @Test(groups = "contactsTab",  priority = 41)
@@ -405,7 +639,7 @@ public class PTTest {
         //contacts tab shows only tableview and not the cells under it
         WebElement tableView = (WebElement)driver.findElement(By.xpath("//UIATableView"));
         //assert that the value matches
-        Assert.assertTrue(tableView.getAttribute("value").contains("rows"));
+        assertTrue(tableView.getAttribute("value").contains("rows"));
 
     }
 
@@ -416,15 +650,15 @@ public class PTTest {
         nav_bar = driver.findElementByClassName("UIANavigationBar");
         nav_bar.findElement(By.name("Add")).click();
         IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
-        Assert.assertTrue(tableView.getAttribute("value").contains("rows"));
+        assertTrue(tableView.getAttribute("value").contains("rows"));
         String chatToUser = "mob8";
         tableView.scrollTo(chatToUser).click();
         nav_bar = driver.findElementByClassName("UIANavigationBar");
-        Assert.assertTrue(nav_bar.getAttribute("name").equals(chatToUser));
+        assertTrue(nav_bar.getAttribute("name").equals(chatToUser));
 
         //assert that previous messages show correctly
         List<IOSElement> elements =  driver.findElementsByXPath("//UIACollectionView/UIACollectionCell");
-        Assert.assertTrue(elements.size() > 0,"Messages loaded");
+        assertTrue(elements.size() > 0, "Messages loaded");
 
         MobileElement textView = (MobileElement) driver.findElementByXPath("//UIAToolbar/UIATextView");
         textView.clear();
@@ -433,7 +667,7 @@ public class PTTest {
         driver.findElementByXPath("//UIAToolbar/UIAButton[2]").click();
 
         elements =  driver.findElementsByXPath("//UIACollectionView/UIACollectionCell");
-        Assert.assertTrue(elements.size() > 0,"Messages loaded");
+        assertTrue(elements.size() > 0, "Messages loaded");
         Boolean stringVisible = false;
         Boolean sent = false;
         if(elements.get(elements.size()-1).getAttribute("name").contains("Hi! Testing private chat through Appium " + date)) {
@@ -447,8 +681,8 @@ public class PTTest {
                 break;
             }
         }
-        Assert.assertTrue(stringVisible, "Message is visible");
-        Assert.assertTrue(sent,"Message Sent successfully");
+        assertTrue(stringVisible, "Message is visible");
+        assertTrue(sent, "Message Sent successfully");
     }
 
     @Test(groups = "contactsTab",  priority = 43)
@@ -460,14 +694,14 @@ public class PTTest {
         //nav_bar = driver.findElementByClassName("UIANavigationBar");
         nav_bar.findElement(By.name("Group Chat")).click();
         IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
-        Assert.assertTrue(tableView.getAttribute("value").contains("rows"));
+        assertTrue(tableView.getAttribute("value").contains("rows"));
         String[] groupChatMembers = new String[]{"imobaraktesting", "mob8"};
         for(String member : groupChatMembers){
             tableView.scrollTo(member).click();
         }
         nav_bar.findElement(By.name("Start")).click();
-        Assert.assertTrue(nav_bar.getAttribute("name").contains(groupChatMembers[0]), "Group members added");
-        Assert.assertTrue(nav_bar.getAttribute("name").contains(groupChatMembers[1]), "Group members added");
+        assertTrue(nav_bar.getAttribute("name").contains(groupChatMembers[0]), "Group members added");
+        assertTrue(nav_bar.getAttribute("name").contains(groupChatMembers[1]), "Group members added");
         MobileElement textView = (MobileElement) driver.findElementByXPath("//UIAToolbar/UIATextView");
         textView.clear();
         String date = new SimpleDateFormat("dd-MM-YY hh:mm").format(new Date());
@@ -475,7 +709,7 @@ public class PTTest {
         driver.findElementByXPath("//UIAToolbar/UIAButton[2]").click();
 
         List<IOSElement> elements =  driver.findElementsByXPath("//UIACollectionView/UIACollectionCell");
-        Assert.assertTrue(elements.size() > 0,"Messages loaded");
+        assertTrue(elements.size() > 0, "Messages loaded");
         Boolean stringVisible = false;
         Boolean sent = false;
         if(elements.get(elements.size()-1).getAttribute("name").contains("Hi! Testing group chat through Appium " + date)) {
@@ -489,8 +723,8 @@ public class PTTest {
                 break;
             }
         }
-        Assert.assertTrue(stringVisible, "Message is visible");
-        Assert.assertTrue(sent,"Message Sent successfully");
+        assertTrue(stringVisible, "Message is visible");
+        assertTrue(sent, "Message Sent successfully");
     }
 
 
@@ -498,9 +732,9 @@ public class PTTest {
     public void goToNotificationsTab() throws Exception {
 
         tab_bar.findElement(By.name("Notifications")).click();
-        Assert.assertTrue(tab_bar.findElement(By.name("Notifications")).isSelected());
+        assertTrue(tab_bar.findElement(By.name("Notifications")).isSelected());
         nav_bar = driver.findElementByClassName("UIANavigationBar");
-        Assert.assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(),"Notifications");
+        assertEquals(nav_bar.findElement(By.className("UIAStaticText")).getText(), "Notifications");
     }
 
     @Test(groups = "notificationsTab",  priority = 51)
@@ -509,7 +743,7 @@ public class PTTest {
             tab_bar.findElement(By.name("Notifications")).click();
 
         List<MobileElement> tableCells = driver.findElements(By.xpath("//UIATableView/UIATableCell"));
-        Assert.assertNotEquals(tableCells.size(), 0);
+        assertNotEquals(tableCells.size(), 0);
     }
 
     @Test(groups = "notificationsTab",  priority = 52)
@@ -518,14 +752,14 @@ public class PTTest {
         tab_bar.findElement(By.name("Notifications")).click();
         nav_bar = driver.findElementByClassName("UIANavigationBar");
         IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
-        Assert.assertTrue(tableView.getAttribute("value").contains("rows"));
+        assertTrue(tableView.getAttribute("value").contains("rows"));
         isNotificationSuccess = true;
         String[] searchTerms = { "hug", "commented", "profile","approval", "posted", "reviewed",  "congratulations", "assigned", "accepted" };
        for(String searchTerm : searchTerms) {
            scrollToNotification(searchTerm, tableView);
        }
         if(!isNotificationSuccess)
-            Assert.fail("Did not browse to all notifications successfully, check logs for issues.");
+            fail("Did not browse to all notifications successfully, check logs for issues.");
 
     }
 

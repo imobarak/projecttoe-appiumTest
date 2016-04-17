@@ -68,8 +68,8 @@ Groups tab:
 ===========
 * loading groups: your groups and recommended both loaded
 click search right bar button
-click join a group
-click start a group
+*click join a group
+*click start a group
 click a group
 check private icon
 check helper mode icon
@@ -84,7 +84,8 @@ scroll up/down loading
 
             Add group
             =========
-            can add image and info and click add, check that group is added successfully and image is uploaded correctly
+            @can add image and info and click add, check that group is added successfully and image is uploaded correctly
+            *add group without image
             alert if group name exists
 
             Group details
@@ -95,12 +96,12 @@ scroll up/down loading
             toggle switches successfully
             click view group wall
             click more shows correct actions
-            click leave group
+            *click leave group
             click share group
             click edit group
-            click admin panel
+            *click admin panel
             click on write a review or stars
-            click on join group (case private alert appears, case public joins successful)
+            *click on join group (case private alert appears, case public joins successful)
 
                     Group Members list
                     ==================
@@ -111,7 +112,7 @@ scroll up/down loading
 
                     Admin Panel
                     ===========
-                    click on message all users
+                    *click on message all users
                     toggle private switch successfully
                     toggle helper switch successfully
                     click change keywords
