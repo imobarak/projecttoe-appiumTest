@@ -1,17 +1,54 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Group Test Suite" verbose="1">
-    <test name="Group Test" preserve-order="true">
+    <test name="Signup Test" preserve-order="true" enabled="false">
+        <groups>
+            <run>
+                <include name="main" />
+                <include name="signup" />
+                <include name="logout" />
+            </run>
+        </groups>
+
+        <classes>
+            <class name="PTTest">
+                <methods>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+    <test name="Setup pre-testing" preserve-order="true" enabled="false">
+        <groups>
+            <run>
+                <include name="main" />
+                <include name="nonadminLogin" />
+                <include name="setup" />
+                <include name="logout" />
+            </run>
+        </groups>
+
+        <classes>
+            <class name="PTTest">
+                <methods>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+
+    <test name="Main Test" preserve-order="true">
         <groups>
             <run>
                 <include name="main" />
                 <!--include name="loginIssues" /-->
-                <include name="login" />
-                <!--include name="signup" />
-                <include name="newsfeed" /-->
+                <include name="adminLogin" />
+                <!--include name="newsfeed" />
                 <include name="groupsTab" />
-                <!--include name="requestsTab" />
+                <include name="requestsTab" />
                 <include name="contactsTab" />
                 <include name="notificationsTab" /-->
+                <include name="adminPanel" />
+                <!--include name="signup" /-->
             </run>
         </groups>
 

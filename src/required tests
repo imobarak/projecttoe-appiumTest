@@ -3,6 +3,8 @@
 //skipped test info:
     //cannot swipe to delete chats because the chats table view controller doesn't put its elements in the xml
     //did not test add photo for add group
+    // signup did not check add photo
+    //sign up issue with finding groups down the list
 SOLVED: we need to auto accept the ios notification at the beginning
 TODO: we need to check no connectivity doesn't crash any page
 TODO: we need to find a way to check that images are loaded since they don't show as elements in tablecells
@@ -16,7 +18,7 @@ Login:
 ======
 * valid login
 * invalid login
-join now
+* join now
 * forgot password
 back
         forgot password:
@@ -25,9 +27,9 @@ back
         * type correct email and submit
 Signup:
 =======
-fill all details
+* fill all details
 add image/description
-select groups
+@ select groups
 check account is created successfully: image uploaded, description saved, groups joined, newsfeed loads.
 
 NewsFeed tab:
