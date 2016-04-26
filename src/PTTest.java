@@ -1213,7 +1213,7 @@ public class PTTest {
                         //no alerts = worked as expected
                     }
                 } catch (Exception e) {
-                    fail("Could not add pending user. " + e.getLocalizedMessage());
+                    fail("Could not add pending user " + e.getLocalizedMessage());
                 }
 
             }
