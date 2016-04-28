@@ -1,6 +1,6 @@
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Group Test Suite" verbose="1">
-    <test name="Signup Test" preserve-order="true" enabled="false">
+    <test name="Signup Test" preserve-order="true" enabled="true">
         <groups>
             <run>
                 <include name="main" />
@@ -17,12 +17,13 @@
         </classes>
     </test>
 
-    <test name="Setup pre-testing" preserve-order="true" enabled="false">
+    <test name="Setup and nonadmin testing" preserve-order="true" enabled="true">
         <groups>
             <run>
                 <include name="main" />
                 <include name="nonadminLogin" />
                 <include name="setup" />
+                <include name="groupsTabNonadmin"/>
                 <include name="logout" />
             </run>
         </groups>
@@ -36,18 +37,58 @@
     </test>
 
 
-    <test name="Main Test" preserve-order="true">
+    <test name="Main Test" preserve-order="true" enabled="true">
         <groups>
             <run>
                 <include name="main" />
-                <!--include name="loginIssues" /-->
+                <include name="loginIssues" />
                 <include name="adminLogin" />
-                <!--include name="newsfeed" />
+                <include name="newsfeed" />
                 <include name="groupsTab" />
                 <include name="requestsTab" />
                 <include name="contactsTab" />
-                <include name="notificationsTab" /-->
+                <include name="notificationsTab" />
                 <include name="adminPanel" />
+            </run>
+        </groups>
+
+        <classes>
+            <class name="PTTest">
+                <methods>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+    <test name="Demo2-Chats" preserve-order="true" enabled="false">
+        <groups>
+            <run>
+                <include name="main" />
+                <include name="adminLogin" />
+                <include name="contactsTab" />
+            </run>
+        </groups>
+
+        <classes>
+            <class name="PTTest">
+                <methods>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+    <test name="Demo Test" preserve-order="true" enabled="false">
+        <groups>
+            <run>
+                <include name="main" />
+                <include name="loginIssues" />
+                <include name="nonadminLogin" />
+                <include name="newsfeed" />
+                <!--include name="groupsTab" />
+                <include name="requestsTab" />
+                <include name="contactsTab" />
+                <include name="notificationsTab" /-->
+                <!--include name="adminPanel" /-->
                 <!--include name="signup" /-->
             </run>
         </groups>
@@ -55,10 +96,6 @@
         <classes>
             <class name="PTTest">
                 <methods>
-                    <exclude name="loginWithInvalidCredentials" />
-                    <exclude name="goToGroupsTab" />
-                    <exclude name="loadGroups" />
-                    <exclude name="addGroup" />
                 </methods>
             </class>
         </classes>
