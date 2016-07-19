@@ -72,12 +72,7 @@ public class PTTest {
     @Test(groups = "logout", priority = 80)
     public  void logout() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+        goBack();
         tab_bar = driver.findElementByClassName("UIATabBar");
         tab_bar.findElement(By.name("Newsfeed")).click();
 
@@ -485,12 +480,7 @@ public class PTTest {
     @Test(groups = "groupsTab", priority = 22, enabled = true)
     public void searchGroup() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+        goBack();
         tab_bar.findElement(By.name("Groups")).click();
         nav_bar = driver.findElementByClassName("UIANavigationBar");
         IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
@@ -502,24 +492,23 @@ public class PTTest {
         }
         //nav_bar = driver.findElementByClassName("UIANavigationBar");
         nav_bar.findElement(By.className("UIASearchBar")).sendKeys("a");
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
-       if( driver.findElementsByXPath("//UIATableView/UIATableCell").size() > 0){
-           ((IOSElement)driver.findElementByXPath("//UIATableView")).scrollTo("anxiety").click();
-           assertTrue(nav_bar.getAttribute("name").equals("Group"), "Segue to group");
-       }else
-           fail("Search term did not return any results");
-
+        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        nav_bar.findElement(By.className("UIASearchBar")).sendKeys("nxiety101");
+        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+       //if( driver.findElementsByXPath("//UIATableView/UIATableCell").size() > 0){
+        try{
+            tableView.findElementByXPath("//UIATableCell").click();
+            assertTrue(nav_bar.getAttribute("name").equals("Group"), "Segue to group");
+       }catch (Exception e) {
+            fail("Could not reach required search result");
+        }
     }
 
     @Test(groups = "groupsTab", priority = 23, enabled = true)
     public void addGroup() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+       goBack();
         tab_bar.findElement(By.name("Groups")).click();
         IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
         try{
@@ -529,8 +518,8 @@ public class PTTest {
             throw e;
         }
         List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
-        String dateNow = new SimpleDateFormat("dd-MM-YY hh:mm").format(new Date());
-        newlyAddedGroup = "Appium Group " + dateNow;
+        String dateNow = new SimpleDateFormat("dd-MM-YY_hh:mm").format(new Date());
+        newlyAddedGroup = "Appium_Group_" + dateNow;
         tableCells.get(1).findElementByClassName("UIATextField").sendKeys(newlyAddedGroup);
         tableCells.get(2).findElementByClassName("UIATextView").sendKeys("Appium description");
         tableCells.get(3).findElementByClassName("UIATextView").sendKeys("Appium keywords");
@@ -550,7 +539,7 @@ public class PTTest {
         }
         try{
             WebDriverWait wait = new WebDriverWait(driver, 15);
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.name("Success!")));
+            wait.until(ExpectedConditions.presenceOfElementLocated(By.name("Ready to add \"Helpers?\"")));
             driver.findElementByName("No Thanks").click();
         }catch (Exception e){
             fail("Did not add group successfully");
@@ -561,16 +550,15 @@ public class PTTest {
     @Test(groups = "groupsTab", priority = 24, enabled = true)
     public void checkGroupDetails() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+       goBack();
         tab_bar.findElement(By.name("Groups")).click();
         IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
         try{
-            tableView.scrollTo("Appium_Group").click();
+            if (!newlyAddedGroup.isEmpty())
+                tableView.scrollTo(newlyAddedGroup).click();
+            else {
+                tableView.scrollTo("Appium_Group_").click();
+            }
         }catch (NotFoundException e){
             fail("Unable to find group");
             throw e;
@@ -592,26 +580,27 @@ public class PTTest {
         }catch(Exception e){
             fail("Could not define group reviews");
         }
+        assertTrue(tableCells.get(3).findElementByClassName("UIAStaticText").getText().contains("View Group Wall"), "View Group Wall button not found");
 
-        assertTrue(tableCells.get(2).findElementByClassName("UIAStaticText").getText().contains("Appium_Group"), "Group name incorrect");
-        assertTrue(tableCells.get(2).findElementByClassName("UIATextView").getText().contains("Appium description"), "Group description incorrect");
+        assertTrue(tableCells.get(5).findElementByClassName("UIAStaticText").getText().contains(newlyAddedGroup), "Group name incorrect");
+        assertTrue(tableCells.get(5).findElementByClassName("UIATextView").getText().contains("Appium description"), "Group description incorrect");
         //this is a private group and not helper so we should find the privateIcon and no helperModeIcon
        try{
-           tableCells.get(2).findElementByName("privateIcon");
+           tableCells.get(5).findElementByName("privateIcon");
            System.out.println("Group is private");
        }catch (NoSuchElementException e){
            fail("Private icon not found this group should be private");
        }
 
         try{
-            tableCells.get(2).findElementByName("helperMode");
+            tableCells.get(5).findElementByName("helperIcon");
             fail("Helper icon is found in this group although it should not be in helper mode");
         }catch (NoSuchElementException e){
             System.out.println("Group is not in helper mode");
         }
         List<IOSElement> tableGroups = driver.findElementsByXPath("//UIATableView/UIATableGroup");
        try {
-           String usersCount = tableGroups.get(1).findElementByClassName("UIAStaticText").getText();
+           String usersCount = tableGroups.get(2).findElementByClassName("UIAStaticText").getText();
 
            usersCount = usersCount.substring(usersCount.indexOf("(") + 1);
            usersCount = usersCount.substring(0, usersCount.indexOf(")"));
@@ -622,26 +611,44 @@ public class PTTest {
        }
 
         try {
-            for(int i=4; i<=6; i++) {
+            for(int i=7; i<=9; i++) {
                 assertTrue(tableCells.get(i).findElementByClassName("UIASwitch").isEnabled(), "Switch for " + tableCells.get(i).findElementByClassName("UIAStaticText").getText() + " is not visible");
             }
         }catch (Exception e){
             fail("Could not define group alerts");
         }
+    }
 
-        assertTrue(tableCells.get(8).findElementByClassName("UIAStaticText").getText().contains("View Group Wall"), "View Group Wall button not found");
+    @Test(groups = "groupsTab", priority = 24, enabled = true)
+    public void checkPremiumGroup() throws Exception {
+        //replace here to make test fail
+        goBack();
+        tab_bar.findElement(By.name("Groups")).click();
+        IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+        try{
+            tableView.scrollTo("Appium_Premium").click();
+
+        }catch (NotFoundException e){
+            fail("Unable to find group");
+            throw e;
+        }
+
+        List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
+        try {
+
+            assertTrue(tableCells.get(4).isDisplayed(), "Premium badge row should be visible");
+            assertTrue(driver.findElementByXPath("//UIATableView/UIATableGroup[2]").getAttribute("name").equals("BADGES"),"Premium badge row should be visible");
+        }catch (Exception e){
+            fail("Premium badge row should be visible");
+        }
+
     }
 
     //Assumes: user joined Appium_Public_Group, which is a public group and he is not the admin
     @Test(groups = "groupsTabNonadmin", priority = 25, enabled = true)
     public void canLeaveJoinPublicGroup() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+       goBack();
         tab_bar.findElement(By.name("Groups")).click();
         IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
         try{
@@ -695,12 +702,7 @@ public class PTTest {
     @Test(groups = "groupsTabNonadmin", priority = 26, enabled = true)
     public void canLeaveJoinPrivateGroup() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+        goBack();
         tab_bar.findElement(By.name("Groups")).click();
         IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
         try{
@@ -755,12 +757,7 @@ public class PTTest {
     @Test(groups = "groupsTab", priority = 25, enabled = true)
     public void canWriteReview() throws Exception {
         //replace here to make test fail
-        try {
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        } catch (Exception e) {
-
-        }
+        goBack();
         tab_bar.findElement(By.name("Groups")).click();
         IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
         try {
@@ -852,12 +849,7 @@ public class PTTest {
     @Test(groups = "setup", priority = 80, enabled = false)
     public void joinPrivateGroup() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+        goBack();
         tab_bar.findElement(By.name("Groups")).click();
 
         IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
@@ -892,71 +884,65 @@ public class PTTest {
 
     }
     @Test(groups = "adminPanel", priority = 60, enabled = true)
-    public void canBlockUsers() throws Exception {
+    public void canBlockUnblockUsers() throws Exception {
         //replace here to make test fail
+       goToAdminPanel("Appium_Public");
         try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
-        tab_bar = driver.findElementByClassName("UIATabBar");
-        tab_bar.findElement(By.name("Groups")).click();
-        if(!nav_bar.findElement(By.className("UIAStaticText")).getText().equals("Group")) {
-            IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
-            try {
-                tableView.scrollTo("Appium_Public").click();
-            } catch (NotFoundException e) {
-                fail("Unable to find group");
-                throw e;
-            }
-        }
-
-        try{
-            ((IOSElement)driver.findElementByXPath("//UIATableView//UIATableCell[4]")).click();
+            ((IOSElement)driver.findElementByXPath("//UIATableView")).scrollTo("Blocked Users").click();
             List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
             if(tableCells.size() == 0)
-                fail("user list is empty");
+                fail("Blocked users is empty");
             else{
-                try {
-                    MobileElement element = ((IOSElement) driver.findElementByXPath("//UIATableView")).scrollTo(nonAdminUsername);
-                    element.findElement(By.name("Block")).click();
-                    try{
-                        //handling alert
-                        WebDriverWait wait = new WebDriverWait(driver, 15);
-                        wait.until(ExpectedConditions.alertIsPresent());
-                        Alert errorDialog = driver.switchTo().alert();
-                        errorDialog.accept();
-                        fail("Could not block user alert is: " + errorDialog.getText());
-                    }catch (Exception e){
-                        //no alerts = worked as expected
-                    }
-                    try{
-                        ((IOSElement)driver.findElementByXPath("//UIATableView")).scrollTo(nonAdminUsername);
-                        fail("Block failed user is still in list");
-                    }catch (Exception e){
-                        //not found: worked as expected
-                    }
-                }catch (NotFoundException e){
-                    fail("User not found");
-                    throw e;
+                MobileElement element = ((IOSElement) driver.findElementByXPath("//UIATableView")).scrollTo(nonAdminUsername);
+                element.findElement(By.name("Block")).click();
+                try{
+                    //handling alert
+                    WebDriverWait wait = new WebDriverWait(driver, 15);
+                    wait.until(ExpectedConditions.alertIsPresent());
+                    Alert errorDialog = driver.switchTo().alert();
+                    errorDialog.accept();
+                    fail("Could not block user alert is: " + errorDialog.getText());
+                }catch (Exception e){
+                    //no alerts = worked as expected
+                }
+                try{
+                    element = ((IOSElement)driver.findElementByXPath("//UIATableView")).scrollTo(nonAdminUsername);
+                    element.findElement(By.name("Block"));
+                    fail("Block failed user is still in unblocked list");
+                }catch (Exception e){
+                    //not found: worked as expected
+                }
+                element = ((IOSElement)driver.findElementByXPath("//UIATableView")).scrollTo(nonAdminUsername);
+                element.findElement(By.name("Unblock")).click();
+                try{
+                    //handling alert
+                    WebDriverWait wait = new WebDriverWait(driver, 15);
+                    wait.until(ExpectedConditions.alertIsPresent());
+                    Alert errorDialog = driver.switchTo().alert();
+                    errorDialog.accept();
+                    fail("Could not unblock user alert is: " + errorDialog.getText());
+                }catch (Exception e){
+                    //no alerts = worked as expected
+                }
+                try{
+                    element = ((IOSElement)driver.findElementByXPath("//UIATableView")).scrollTo(nonAdminUsername);
+                    element.findElement(By.name("Unblock")).click();
+                    fail("Unblock failed user is still blocked");
+                }catch (Exception e){
+                    //not found: worked as expected
                 }
             }
         }catch (Exception e){
             fail("Did not block user successfully: "+ e.getLocalizedMessage());
             throw e;
         }
+
     }
 
     @Test(groups = "adminPanel", priority = 61, enabled = true)
     public void canBroadcastMessage() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+        goBack();
         tab_bar.findElement(By.name("Groups")).click();
         IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
         try{
@@ -1007,113 +993,10 @@ public class PTTest {
         assertTrue(adminPanelFound, "Could not find 'admin panel' in actionsheet");
     }
 
-    @Test(groups = "adminPanel", priority = 62, enabled = true)
-    public void canUnblockUsers() throws Exception {
-        //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            if(!nav_bar.findElement(By.className("UIAStaticText")).getText().contains("Admin Panel"))
-                nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
-        nav_bar = driver.findElementByClassName("UIANavigationBar");
-        if(!nav_bar.findElement(By.className("UIAStaticText")).getText().contains("Admin Panel")) {
-            tab_bar.findElement(By.name("Groups")).click();
-            IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
-            try {
-                tableView.scrollTo("Appium_Public").click();
-            } catch (NotFoundException e) {
-                fail("Unable to find group");
-                throw e;
-            }
-
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("more")).click();
-
-            List<IOSElement> actionCells = driver.findElementsByXPath("//UIAActionSheet/UIACollectionView");
-            Boolean adminPanelFound = false;
-            for (IOSElement actionCell : actionCells) {
-                try {
-                    actionCell.findElementByName("Admin Panel").click();
-                    adminPanelFound = true;
-                    break;
-                } catch (Exception e) {
-                    //not admin panel action
-                }
-            }
-            assertTrue(adminPanelFound, "Could not find 'admin panel' in actionsheet");
-        }
-
-        try{
-            ((IOSElement)driver.findElementByXPath("//UIATableView")).scrollTo("Blocked Users").click();
-            List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
-            if(tableCells.size() == 0)
-                fail("Blocked users is empty");
-            else{
-                MobileElement element = ((IOSElement) driver.findElementByXPath("//UIATableView")).scrollTo(nonAdminUsername);
-                element.findElement(By.name("Unblock")).click();
-                try{
-                    //handling alert
-                    WebDriverWait wait = new WebDriverWait(driver, 15);
-                    wait.until(ExpectedConditions.alertIsPresent());
-                    Alert errorDialog = driver.switchTo().alert();
-                    errorDialog.accept();
-                    fail("Could not unblock user alert is: " + errorDialog.getText());
-                }catch (Exception e){
-                    //no alerts = worked as expected
-                }
-                try{
-                    ((IOSElement)driver.findElementByXPath("//UIATableView")).scrollTo(nonAdminUsername);
-                    fail("Unblock failed user is still in list");
-                }catch (Exception e){
-                    //not found: worked as expected
-                }
-            }
-        }catch (Exception e){
-            fail("Did not block user successfully: "+ e.getLocalizedMessage());
-            throw e;
-        }
-    }
-
     @Test(groups = "adminPanel", priority = 63, enabled = true)
     public void canAddRemoveHelper() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            if(!nav_bar.findElement(By.className("UIAStaticText")).getText().contains("Admin Panel"))
-                nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
-        nav_bar = driver.findElementByClassName("UIANavigationBar");
-        if(!nav_bar.findElement(By.className("UIAStaticText")).getText().contains("Admin Panel")) {
-            tab_bar.findElement(By.name("Groups")).click();
-            IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
-            try {
-                tableView.scrollTo("Appium_Public").click();
-            } catch (NotFoundException e) {
-                fail("Unable to find group");
-                throw e;
-            }
-
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("more")).click();
-
-            List<IOSElement> actionCells = driver.findElementsByXPath("//UIAActionSheet/UIACollectionView");
-            Boolean adminPanelFound = false;
-            for (IOSElement actionCell : actionCells) {
-                try {
-                    actionCell.findElementByName("Admin Panel").click();
-                    adminPanelFound = true;
-                    break;
-                } catch (Exception e) {
-                    //not admin panel action
-                }
-            }
-            assertTrue(adminPanelFound, "Could not find 'admin panel' in actionsheet");
-        }
-
+        goToAdminPanel("Appium_Public");
         try{
             ((IOSElement)driver.findElementByXPath("//UIATableView")).scrollTo("Group Admins").click();
             List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
@@ -1169,40 +1052,7 @@ public class PTTest {
         @Test(groups = "adminPanel", priority = 64, enabled = true)
         public void canTogglePrivateSwitch() throws Exception {
             //replace here to make test fail
-            try{
-                nav_bar = driver.findElementByClassName("UIANavigationBar");
-                if(!nav_bar.findElement(By.className("UIAStaticText")).getText().contains("Admin Panel"))
-                    nav_bar.findElement(By.name("Back")).click();
-            }catch (Exception e){
-
-            }
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            if(!nav_bar.findElement(By.className("UIAStaticText")).getText().contains("Admin Panel")) {
-                tab_bar.findElement(By.name("Groups")).click();
-                IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
-                try {
-                    tableView.scrollTo("Appium_Public").click();
-                } catch (NotFoundException e) {
-                    fail("Unable to find group");
-                    throw e;
-                }
-
-                nav_bar = driver.findElementByClassName("UIANavigationBar");
-                nav_bar.findElement(By.name("more")).click();
-
-                List<IOSElement> actionCells = driver.findElementsByXPath("//UIAActionSheet/UIACollectionView");
-                Boolean adminPanelFound = false;
-                for (IOSElement actionCell : actionCells) {
-                    try {
-                        actionCell.findElementByName("Admin Panel").click();
-                        adminPanelFound = true;
-                        break;
-                    } catch (Exception e) {
-                        //not admin panel action
-                    }
-                }
-                assertTrue(adminPanelFound, "Could not find 'admin panel' in actionsheet");
-            }
+            goToAdminPanel("Appium_Public");
 
             try{
                 MobileElement element = ((IOSElement) driver.findElementByXPath("//UIATableView")).scrollTo("Make Group Private");
@@ -1251,44 +1101,9 @@ public class PTTest {
         }
 
     @Test(groups = "adminPanel", priority = 65, enabled = true)
-    public void canToggleHelperSwitch() throws Exception {
+    public void nonPremiumHelperSwitch() throws Exception {
         //replace here to make test fail
-        Integer actionCellIndex = 1;
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            if(!nav_bar.findElement(By.className("UIAStaticText")).getText().contains("Admin Panel"))
-                nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
-        nav_bar = driver.findElementByClassName("UIANavigationBar");
-        if(!nav_bar.findElement(By.className("UIAStaticText")).getText().contains("Admin Panel")) {
-            tab_bar.findElement(By.name("Groups")).click();
-            IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
-            try {
-                tableView.scrollTo("Appium_Public").click();
-            } catch (NotFoundException e) {
-                fail("Unable to find group");
-                throw e;
-            }
-
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("more")).click();
-
-            List<IOSElement> actionCells = driver.findElementsByXPath("//UIAActionSheet/UIACollectionView");
-            Boolean adminPanelFound = false;
-            for (IOSElement actionCell : actionCells) {
-                try {
-                    actionCell.findElementByName("Admin Panel").click();
-                    adminPanelFound = true;
-                    break;
-                } catch (Exception e) {
-                    //not admin panel action
-                    actionCellIndex++;
-                }
-            }
-            assertTrue(adminPanelFound, "Could not find 'admin panel' in actionsheet");
-        }
+        goToAdminPanel("Appium_Public");
 
         try{
             MobileElement element = ((IOSElement) driver.findElementByXPath("//UIATableView")).scrollTo("Helper-Mode");
@@ -1308,11 +1123,53 @@ public class PTTest {
             fail("Could click on helper mode switch. " + e.getLocalizedMessage());
             throw e;
         }
+        try{
+            driver.findElementByName("Upgrade to Premium");
+            driver.findElementByName("No Thanks").click();
+            System.out.println("This is not a premium group could not toggle switch");
+            nav_bar.findElement(By.name("Back")).click();
+        }catch (Exception e) {
+            System.out.println("Did not get \"upgrade to premium alert \"");
+            fail();
+        }
+    }
 
+    @Test(groups = "adminPanel", priority = 65, enabled = true)
+    public void premiumHelperSwitch() throws Exception {
+        //replace here to make test fail
+        goToAdminPanel("Appium_Premium");
+
+        try{
+            MobileElement element = ((IOSElement) driver.findElementByXPath("//UIATableView")).scrollTo("Helper-Mode");
+            element.findElementByClassName("UIASwitch").click();
+            try{
+                //handling alert
+                WebDriverWait wait = new WebDriverWait(driver, 15);
+                wait.until(ExpectedConditions.alertIsPresent());
+                Alert errorDialog = driver.switchTo().alert();
+                errorDialog.accept();
+                fail("Could not make group in helper mode alert is: " + errorDialog.getText());
+                return;
+            }catch (Exception e){
+                //no alerts = worked as expected
+            }
+        }catch (Exception e){
+            fail("Could click on helper mode switch. " + e.getLocalizedMessage());
+            throw e;
+        }
+        try{
+            driver.findElementByName("Upgrade to Premium");
+            driver.findElementByName("No Thanks").click();
+            System.out.println("This is not a premium group could not toggle switch");
+            nav_bar.findElement(By.name("Back")).click();
+            fail();
+        }catch (Exception e) {
+            System.out.println("Did not get \"upgrade to premium alert \"");
+        }
         nav_bar.findElement(By.name("Back")).click();
         try{
             List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
-            tableCells.get(2).findElementByName("helperMode");
+            tableCells.get(5).findElementByName("helperIcon");
             System.out.println("Group is in helper mode");
         }catch (NoSuchElementException e){
             fail("Helper icon is not found");
@@ -1321,7 +1178,6 @@ public class PTTest {
 
         try {
             nav_bar.findElement(By.name("more")).click();
-            //((IOSElement)driver.findElementByXPath("//UIAActionSheet/UIACollectionView[" + actionCellIndex + "]")).click();
             List<IOSElement> actionCells = driver.findElementsByXPath("//UIAActionSheet/UIACollectionView");
             for (IOSElement actionCell : actionCells) {
                 try {
@@ -1351,7 +1207,7 @@ public class PTTest {
         try{
             nav_bar.findElement(By.name("Back")).click();
             List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
-            tableCells.get(2).findElementByName("helperMode");
+            tableCells.get(5).findElementByName("helperIcon");
             fail("Helper icon is found although we set it back to non-helper");
             return;
         }catch (NoSuchElementException e){
@@ -1363,7 +1219,8 @@ public class PTTest {
     @Test(groups = "adminPanel", priority = 66, enabled = true)
     public void canAddPending() throws Exception {
         //replace here to make test fail
-        try{
+        goToAdminPanel("Appium_Private");
+        /*try{
             nav_bar = driver.findElementByClassName("UIANavigationBar");
             if(!nav_bar.findElement(By.className("UIAStaticText")).getText().contains("Admin Panel"))
                 nav_bar.findElement(By.name("Back")).click();
@@ -1380,6 +1237,7 @@ public class PTTest {
                 fail("Unable to find group");
                 throw e;
             }
+
 
             //ensure that this is now a private group through checking the private icon
             try{
@@ -1407,7 +1265,7 @@ public class PTTest {
             }
             assertTrue(adminPanelFound, "Could not find 'admin panel' in actionsheet");
         }
-
+*/
         try{
             ((IOSElement)driver.findElementByXPath("//UIATableView")).scrollTo("Pending Requests").click();
             List<IOSElement> tableCells = driver.findElementsByXPath("//UIATableView/UIATableCell");
@@ -1444,12 +1302,7 @@ public class PTTest {
     @Test(groups = "adminPanel", priority = 67, enabled = true)
     public void canChangeGroupKeywords() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+        goBack();
         tab_bar.findElement(By.name("Groups")).click();
         IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
         try{
@@ -1501,12 +1354,7 @@ public class PTTest {
     @Test(groups = "requestsTab", priority = 30)
     public void goToRequestsTab() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+        goBack();
         tab_bar.findElement(By.name("Request")).click();
         assertTrue(tab_bar.findElement(By.name("Request")).isSelected());
         nav_bar = driver.findElementByClassName("UIANavigationBar");
@@ -1552,12 +1400,7 @@ public class PTTest {
     @Test(groups = "contactsTab", priority = 40)
     public void goToContactsTab() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+        goBack();
         tab_bar.findElement(By.name("Contacts")).click();
         assertTrue(tab_bar.findElement(By.name("Contacts")).isSelected());
         nav_bar = driver.findElementByClassName("UIANavigationBar");
@@ -1627,12 +1470,7 @@ public class PTTest {
     public void startGroupChat() throws Exception {
         //replace here to make test fail
        //force it to start from main contacts page
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+       goBack();
         tab_bar.findElement(By.name("Contacts")).click();
         nav_bar = driver.findElementByClassName("UIANavigationBar");
         nav_bar.findElement(By.name("Add")).click();
@@ -1676,12 +1514,7 @@ public class PTTest {
     @Test(groups = "notificationsTab", priority = 50)
     public void goToNotificationsTab() throws Exception {
         //replace here to make test fail
-        try{
-            nav_bar = driver.findElementByClassName("UIANavigationBar");
-            nav_bar.findElement(By.name("Back")).click();
-        }catch (Exception e){
-
-        }
+       goBack();
         tab_bar.findElement(By.name("Notifications")).click();
         assertTrue(tab_bar.findElement(By.name("Notifications")).isSelected());
         nav_bar = driver.findElementByClassName("UIANavigationBar");
@@ -1779,6 +1612,52 @@ public class PTTest {
         }catch (Exception e){
             System.out.println("Could not find notification with search term: " + searchTerm);
             isNotificationSuccess = false;
+        }
+    }
+
+    public void goBack() {
+        try {
+            nav_bar = driver.findElementByClassName("UIANavigationBar");
+            nav_bar.findElement(By.name("Back")).click();
+        } catch (Exception e) {
+
+        }
+    }
+
+    public void goToAdminPanel(String groupName){
+        try{
+            nav_bar = driver.findElementByClassName("UIANavigationBar");
+            if(!nav_bar.findElement(By.className("UIAStaticText")).getText().contains("Admin Panel"))
+                nav_bar.findElement(By.name("Back")).click();
+        }catch (Exception e){
+
+        }
+        nav_bar = driver.findElementByClassName("UIANavigationBar");
+        if(!nav_bar.findElement(By.className("UIAStaticText")).getText().contains("Admin Panel")) {
+            tab_bar.findElement(By.name("Groups")).click();
+            IOSElement tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
+            try {
+                tableView.scrollTo(groupName).click();
+            } catch (NotFoundException e) {
+                fail("Unable to find group");
+                throw e;
+            }
+
+            nav_bar = driver.findElementByClassName("UIANavigationBar");
+            nav_bar.findElement(By.name("more")).click();
+
+            List<IOSElement> actionCells = driver.findElementsByXPath("//UIAActionSheet/UIACollectionView");
+            Boolean adminPanelFound = false;
+            for (IOSElement actionCell : actionCells) {
+                try {
+                    actionCell.findElementByName("Admin Panel").click();
+                    adminPanelFound = true;
+                    break;
+                } catch (Exception e) {
+                    //not admin panel action
+                }
+            }
+            assertTrue(adminPanelFound, "Could not find 'admin panel' in actionsheet");
         }
     }
 }
