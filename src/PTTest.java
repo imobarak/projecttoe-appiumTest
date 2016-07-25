@@ -35,7 +35,7 @@ public class PTTest {
     Boolean isNotificationSuccess;
     String adminUsername = "imobarak3";
     String nonAdminUsername = "name";
-    String password = "sky";
+    String password = "sky1";
     String signUpTestUser;
     String currentUser;
     String privateGroupJoined;
@@ -46,10 +46,20 @@ public class PTTest {
    // @BeforeGroups("allTests")
     @BeforeTest(groups = "main")
     public void setup() throws MalformedURLException {
+
+
         capabilities = new DesiredCapabilities();
-        capabilities.setCapability("deviceName","myphone");
-        driver = new IOSDriver(new URL("http://127.0.0.1:4723/wd/hub"),capabilities);
-       try{
+        capabilities.setCapability("appium-version", "1.0");
+        capabilities.setCapability("platformName", "iOS");
+        capabilities.setCapability("platformVersion", "9.3");
+        capabilities.setCapability("deviceName", "iPhone 5");
+        //capabilities.setCapability("app", "/Users/imobarak/Microdoers/ipa/Project Toe.app");
+
+       // driver = new IOSDriver(new URL("http://127.0.0.1:4723/wd/hub"),capabilities);
+
+        driver = new IOSDriver(new URL("http://0.0.0.0:4723/wd/hub"), capabilities);
+
+        try{
                   //accepting push notifications
            WebDriverWait wait = new WebDriverWait(driver, 15);
            wait.until(ExpectedConditions.alertIsPresent());
@@ -62,8 +72,31 @@ public class PTTest {
         System.out.println("setup done");
     }
 
+    @BeforeTest(groups = "mainSimulator")
+    public void setupSimulator() throws MalformedURLException {
+
+
+        capabilities = new DesiredCapabilities();
+        capabilities.setCapability("appium-version", "1.0");
+        capabilities.setCapability("platformName", "iOS");
+        capabilities.setCapability("platformVersion", "9.3");
+        capabilities.setCapability("deviceName", "iPhone 5");
+        driver = new IOSDriver(new URL("http://0.0.0.0:4723/wd/hub"), capabilities);
+
+        try{
+            //accepting push notifications
+            WebDriverWait wait = new WebDriverWait(driver, 15);
+            wait.until(ExpectedConditions.alertIsPresent());
+            Alert errorDialog = driver.switchTo().alert();
+            errorDialog.accept();
+        }catch (Exception e){
+            //did not handle the ios notification
+        }
+
+        System.out.println("setup done");
+    }
     //@AfterTest(groups = "allTests", alwaysRun = true )
-    @AfterTest(groups = "main", alwaysRun = true )
+    @AfterTest(groups = "main, mainSimulator", alwaysRun = true )
     public void teardown(){
         driver.quit();
         System.out.println("clean up done");
@@ -291,7 +324,7 @@ public class PTTest {
         tab_bar = driver.findElementByClassName("UIATabBar");
 
     }
-    @Test(groups = "newsfeed", priority = 10)
+    @Test(groups = "newsfeed", priority = 10, enabled = false)
     public void goToNewsFeedTab() throws Exception {
         //replace here to make test fail
         //there is nav bar inside the app
@@ -306,7 +339,7 @@ public class PTTest {
 
     }
 
-    @Test(groups = "newsfeed", priority = 11)
+    @Test(groups = "newsfeed", priority = 11,  enabled = false)
     public void loadNewsfeed() throws Exception {
         //replace here to make test fail
         try{
@@ -343,10 +376,10 @@ public class PTTest {
         }
         if(nav_bar.getAttribute("name").equals("Newsfeed")) {
             nav_bar.findElement(By.name("Post")).click();
+            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             postDate = new SimpleDateFormat("dd-MM-YY hh:mm").format(new Date());
             driver.findElementByClassName("UIATextView").sendKeys("Testing new post through Appium " + postDate);
             nav_bar.findElement(By.name("Post")).click();
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
             System.out.println("Making a new post successful");
             checkPostSuccessful();
@@ -376,8 +409,13 @@ public class PTTest {
         //replace here to make test fail
         try{
             nav_bar = driver.findElementByClassName("UIANavigationBar");
-            if(!nav_bar.getAttribute("name").equals("Newsfeed"))
-                nav_bar.findElement(By.name("Back")).click();
+            if(!nav_bar.getAttribute("name").equals("Newsfeed")){
+                try{
+                    nav_bar.findElement(By.name("Back")).click();
+                }catch (Exception e){
+                    nav_bar.findElement(By.name("Cancel")).click();
+                }
+            }
         }catch (Exception e){
 
         }
@@ -405,8 +443,13 @@ public class PTTest {
         //replace here to make test fail
         try{
             nav_bar = driver.findElementByClassName("UIANavigationBar");
-            if(!nav_bar.getAttribute("name").equals("Newsfeed"))
-                nav_bar.findElement(By.name("Back")).click();
+            if(!nav_bar.getAttribute("name").equals("Newsfeed")){
+                try{
+                    nav_bar.findElement(By.name("Back")).click();
+                }catch (Exception e){
+                    nav_bar.findElement(By.name("Cancel")).click();
+                }
+            }
         }catch (Exception e){
 
         }

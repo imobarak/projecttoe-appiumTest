@@ -111,7 +111,7 @@
         </classes>
     </test>
 
-    <test name="Demo Test" preserve-order="true" enabled="true">
+    <test name="Demo Test" preserve-order="true" enabled="false">
         <groups>
             <run>
                 <include name="main" />
@@ -123,6 +123,28 @@
                 <include name="contactsTab" />
                 <include name="notificationsTab" />
                 <include name="adminPanel" />
+                <!--include name="signup" /-->
+            </run>
+        </groups>
+
+        <classes>
+            <class name="PTTest">
+                <methods>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+    <test name="Simulator Test" preserve-order="true" enabled="true">
+        <groups>
+            <run>
+                <include name="mainSimulator" />
+                <include name="newsfeed" />
+                <!--include name="groupsTab" />
+                <include name="requestsTab" />
+                <include name="contactsTab" />
+                <include name="notificationsTab" />
+                <include name="adminPanel" /-->
                 <!--include name="signup" /-->
             </run>
         </groups>
