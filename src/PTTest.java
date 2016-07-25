@@ -375,6 +375,7 @@ public class PTTest {
 
         }
         if(nav_bar.getAttribute("name").equals("Newsfeed")) {
+            
             nav_bar.findElement(By.name("Post")).click();
             driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             postDate = new SimpleDateFormat("dd-MM-YY hh:mm").format(new Date());
