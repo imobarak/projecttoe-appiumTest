@@ -139,6 +139,7 @@
         <groups>
             <run>
                 <include name="mainSimulator" />
+                <include name="adminLogin" />
                 <include name="newsfeed" />
                 <!--include name="groupsTab" />
                 <include name="requestsTab" />

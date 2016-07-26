@@ -31,6 +31,7 @@ public class PTTest {
     DesiredCapabilities capabilities;
     WebElement nav_bar;
     WebElement tab_bar;
+    WebDriverWait wait;
     String postDate;
     Boolean isNotificationSuccess;
     String adminUsername = "imobarak3";
@@ -61,7 +62,7 @@ public class PTTest {
 
         try{
                   //accepting push notifications
-           WebDriverWait wait = new WebDriverWait(driver, 15);
+            wait = new WebDriverWait(driver, 30);
            wait.until(ExpectedConditions.alertIsPresent());
            Alert errorDialog = driver.switchTo().alert();
            errorDialog.accept();
@@ -81,22 +82,31 @@ public class PTTest {
         capabilities.setCapability("platformName", "iOS");
         capabilities.setCapability("platformVersion", "9.3");
         capabilities.setCapability("deviceName", "iPhone 5");
-        driver = new IOSDriver(new URL("http://0.0.0.0:4723/wd/hub"), capabilities);
+        capabilities.setCapability("launchTimeout", "40000");
+        capabilities.setCapability("noReset", "true");
+        capabilities.setCapability("fullReset", "false");
 
-        try{
+        capabilities.setCapability("app", "/Users/imobarak/Microdoers/ipa/Project Toe.app");
+        capabilities.setCapability("waitForAppScript", "if (target.frontMostApp().alert().name()=='\"Project Toe\" Would Like to Send You Notifications') {$.acceptAlert(); true;}");
+        driver = new IOSDriver(new URL("http://0.0.0.0:4723/wd/hub"), capabilities);
+ /* try{
             //accepting push notifications
-            WebDriverWait wait = new WebDriverWait(driver, 15);
+            wait = new WebDriverWait(driver, 60);
             wait.until(ExpectedConditions.alertIsPresent());
             Alert errorDialog = driver.switchTo().alert();
             errorDialog.accept();
+            errorDialog.getText().contains("would like to");
+            capabilities.setCapability("waitForAppScript", "$.delay(3000);$.acceptAlert()");
+
+
         }catch (Exception e){
             //did not handle the ios notification
         }
-
+*/
         System.out.println("setup done");
     }
     //@AfterTest(groups = "allTests", alwaysRun = true )
-    @AfterTest(groups = "main, mainSimulator", alwaysRun = true )
+    @AfterTest(groups =  { "main", "mainSimulator" }, alwaysRun = true )
     public void teardown(){
         driver.quit();
         System.out.println("clean up done");
@@ -122,7 +132,7 @@ public class PTTest {
                 logoutFound = true;
                 try {
                     //handling alert
-                    WebDriverWait wait = new WebDriverWait(driver, 15);
+                    wait = new WebDriverWait(driver, 15);
                     wait.until(ExpectedConditions.alertIsPresent());
                     Alert errorDialog = driver.switchTo().alert();
                     errorDialog.accept();
@@ -138,9 +148,14 @@ public class PTTest {
 
     }
 
-    @Test(groups = "main", priority = 1)
+    @Test(groups =  { "main", "mainSimulator" }, priority = 1)
     public  void signIn() throws Exception {
         //replace here to make test fail
+
+        //initializing wait and implicitwait for the rest of the execution
+        wait = new WebDriverWait(driver, 15);
+        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+
         WebElement element = driver.findElement(By.name("Sign In"));
         assertNotNull(element);
         element.click();
@@ -157,7 +172,7 @@ public class PTTest {
 
         driver.findElement(By.xpath("//UIATableCell[1]/UIATextField")).sendKeys("invalidemail");
         driver.findElement(By.xpath("//UIATableCell[2]/UIAButton")).click();
-        WebDriverWait wait = new WebDriverWait(driver, 15);
+        wait = new WebDriverWait(driver, 15);
         wait.until(ExpectedConditions.alertIsPresent());
 
         Alert errorDialog = driver.switchTo().alert();
@@ -176,7 +191,7 @@ public class PTTest {
         driver.findElement(By.xpath("//UIATableCell[1]/UIATextField")).clear();
         driver.findElement(By.xpath("//UIATableCell[1]/UIATextField")).sendKeys("imobarak@gmail.com");
         driver.findElement(By.xpath("//UIATableCell[2]/UIAButton")).click();
-        WebDriverWait wait = new WebDriverWait(driver, 15);
+        wait = new WebDriverWait(driver, 15);
         wait.until(ExpectedConditions.alertIsPresent());
 
         Alert errorDialog = driver.switchTo().alert();
@@ -217,7 +232,7 @@ public class PTTest {
             rows.get(2).findElementByClassName("UIASecureTextField").sendKeys("password");
             rows.get(3).findElementByClassName("UIASecureTextField").sendKeys("password");
             nav_bar.findElement(By.name("NEXT")).click();
-            WebDriverWait wait = new WebDriverWait(driver, 15);
+            wait = new WebDriverWait(driver, 15);
             wait.until(ExpectedConditions.presenceOfElementLocated(By.name("2/3")));
         }catch (Exception e){
             fail("Signup failed in step 1/3 issue is: " + e.getMessage());
@@ -230,7 +245,6 @@ public class PTTest {
             List<MobileElement> rows = table.findElementsByClassName("UIATableCell");
             rows.get(1).findElementByClassName("UIATextView").sendKeys("I am the automated testing user");
             nav_bar.findElement(By.name("NEXT")).click();
-            WebDriverWait wait = new WebDriverWait(driver, 15);
             wait.until(ExpectedConditions.presenceOfElementLocated(By.name("3/3")));
         }catch (Exception e){
             fail("Signup failed in step 2/3 issue is: " + e.getMessage());
@@ -303,7 +317,7 @@ public class PTTest {
         driver.findElement(By.xpath("//UIATableCell[1]/UIATextField")).sendKeys(currentUser);
         driver.findElement(By.xpath("//UIATableCell[2]/UIASecureTextField")).sendKeys(password);
         driver.findElement(By.name("SUBMIT")).click();
-        MobileElement successView = (MobileElement)new WebDriverWait(driver,15).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//UIANavigationBar/UIAStaticText")));
+        MobileElement successView = (MobileElement)new WebDriverWait(driver,30).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//UIANavigationBar/UIAStaticText")));
         System.out.println("validlogin done");
         tab_bar = driver.findElementByClassName("UIATabBar");
 
@@ -319,12 +333,12 @@ public class PTTest {
         driver.findElement(By.xpath("//UIATableCell[1]/UIATextField")).sendKeys(currentUser);
         driver.findElement(By.xpath("//UIATableCell[2]/UIASecureTextField")).sendKeys(password);
         driver.findElement(By.name("SUBMIT")).click();
-        MobileElement successView = (MobileElement)new WebDriverWait(driver,15).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//UIANavigationBar/UIAStaticText")));
+        MobileElement successView = (MobileElement)new WebDriverWait(driver,30).until(ExpectedConditions.presenceOfElementLocated(By.xpath("//UIANavigationBar/UIAStaticText")));
         System.out.println("validlogin done");
         tab_bar = driver.findElementByClassName("UIATabBar");
 
     }
-    @Test(groups = "newsfeed", priority = 10, enabled = false)
+    @Test(groups = "newsfeed", priority = 10, enabled = true)
     public void goToNewsFeedTab() throws Exception {
         //replace here to make test fail
         //there is nav bar inside the app
@@ -339,7 +353,7 @@ public class PTTest {
 
     }
 
-    @Test(groups = "newsfeed", priority = 11,  enabled = false)
+    @Test(groups = "newsfeed", priority = 11,  enabled = true)
     public void loadNewsfeed() throws Exception {
         //replace here to make test fail
         try{
@@ -375,13 +389,13 @@ public class PTTest {
 
         }
         if(nav_bar.getAttribute("name").equals("Newsfeed")) {
-            
+
             nav_bar.findElement(By.name("Post")).click();
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            Thread.sleep(15);
             postDate = new SimpleDateFormat("dd-MM-YY hh:mm").format(new Date());
             driver.findElementByClassName("UIATextView").sendKeys("Testing new post through Appium " + postDate);
             nav_bar.findElement(By.name("Post")).click();
-
+            wait.until(ExpectedConditions.textToBePresentInElementValue(driver.findElement(By.xpath("//UIANavigationBar/UIAStaticText")), "Newsfeed"));
             System.out.println("Making a new post successful");
             checkPostSuccessful();
         } else
@@ -427,8 +441,7 @@ public class PTTest {
         WebElement element = rows.get(0).findElements(By.className("UIAButton")).get(2);
         Integer numOfHugsBefore =Integer.parseInt(element.getText().substring(0,1));
         rows.get(0).findElements(By.className("UIAButton")).get(1).click();
-
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            //driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
 
             Integer numOfHugsAfter =Integer.parseInt(element.getText().substring(0,1));
@@ -466,7 +479,7 @@ public class PTTest {
             rows = table.findElementsByClassName("UIATableCell");
             rows.get(0).findElement(By.className("UIATextView")).sendKeys("Comment through Appium " + postDate);
             rows.get(0).findElement(By.className("UIAButton")).click();
-            driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+            //driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
             table = (IOSElement) driver.findElementsByClassName("UIATableView").get(0);
             rows = table.findElementsByClassName("UIATableCell");
             assertEquals(numOfCellsBefore + 1, rows.size());
@@ -536,9 +549,9 @@ public class PTTest {
         }
         //nav_bar = driver.findElementByClassName("UIANavigationBar");
         nav_bar.findElement(By.className("UIASearchBar")).sendKeys("a");
-        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        //driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
         nav_bar.findElement(By.className("UIASearchBar")).sendKeys("nxiety101");
-        driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+        //driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
         tableView = (IOSElement) driver.findElementByXPath("//UIATableView");
        //if( driver.findElementsByXPath("//UIATableView/UIATableCell").size() > 0){
         try{
@@ -905,7 +918,7 @@ public class PTTest {
         }
         //nav_bar = driver.findElementByClassName("UIANavigationBar");
         nav_bar.findElement(By.className("UIASearchBar")).sendKeys("Appium_Private_Group");
-        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+        //driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
         if (driver.findElementsByXPath("//UIATableView/UIATableCell").size() > 0) {
             ((IOSElement) driver.findElementByXPath("//UIATableView")).scrollTo("Appium_Private_Group").click();
             assertTrue(nav_bar.getAttribute("name").equals("Group"), "Segue to group");
