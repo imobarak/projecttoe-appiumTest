@@ -141,8 +141,8 @@
                 <include name="mainSimulator" />
                 <include name="adminLogin" />
                 <include name="newsfeed" />
-                <!--include name="groupsTab" />
-                <include name="requestsTab" />
+                <!--include name="groupsTab" /-->
+                <!--include name="requestsTab" />
                 <include name="contactsTab" />
                 <include name="notificationsTab" />
                 <include name="adminPanel" /-->
